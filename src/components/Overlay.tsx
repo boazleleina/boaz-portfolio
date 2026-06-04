@@ -9,9 +9,9 @@ import Logo from './Logo';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ── Typewriter hook ────────────────────────────────────────────────────────────
+// ── Typewriter hook (loops forever) ─────────────────────────────────────────
 function useTypewriter(lines: string[], speed = 60, linePause = 400) {
-  const [display, setDisplay] = useState<string[]>(['', '', '']);
+  const [display, setDisplay] = useState<string[]>(Array(lines.length).fill(''));
   const [currentLine, setCurrentLine] = useState(0);
   const [done, setDone] = useState(false);
 
@@ -19,9 +19,25 @@ function useTypewriter(lines: string[], speed = 60, linePause = 400) {
     let lineIdx = 0;
     let charIdx = 0;
     let timer: ReturnType<typeof setTimeout>;
+    let active = true;
+
+    function reset() {
+      if (!active) return;
+      lineIdx = 0;
+      charIdx = 0;
+      setDisplay(Array(lines.length).fill(''));
+      setDone(false);
+      setCurrentLine(0);
+      timer = setTimeout(type, linePause * 2);
+    }
 
     function type() {
-      if (lineIdx >= lines.length) { setDone(true); return; }
+      if (!active) return;
+      if (lineIdx >= lines.length) {
+        setDone(true);
+        timer = setTimeout(reset, 2200); // pause 2.2s then loop
+        return;
+      }
       setCurrentLine(lineIdx);
       const line = lines[lineIdx];
 
@@ -40,8 +56,12 @@ function useTypewriter(lines: string[], speed = 60, linePause = 400) {
       }
     }
 
-    const start = setTimeout(type, 600); // wait 600ms before starting
-    return () => { clearTimeout(start); clearTimeout(timer); };
+    const start = setTimeout(type, 600);
+    return () => {
+      active = false;
+      clearTimeout(start);
+      clearTimeout(timer);
+    };
   }, []);
 
   return { display, currentLine, done };
@@ -129,7 +149,7 @@ export default function Overlay() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const { display, currentLine, done } = useTypewriter(['Backend.', 'Distributed.', 'Scalable.']);
+  const { display, currentLine, done } = useTypewriter(['Zero Downtime.', 'Planet Scale.', 'Always Shipping.']);
 
   useEffect(() => {
     setMounted(true);
@@ -191,14 +211,29 @@ export default function Overlay() {
       </header>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[auto] md:min-h-screen flex flex-col justify-center md:justify-start pt-28 md:pt-36 pb-16 md:pb-16">
+      <section className="relative md:min-h-screen">
 
-        {/* Portrait — top right corner on mobile, right side on desktop */}
-        <div className="absolute top-14 md:inset-y-0 right-0 w-[44%] sm:w-[42%] max-w-[200px] md:max-w-none md:w-[48%] pointer-events-none z-0">
+        {/* ── Mobile portrait: stacks above text (hidden md+) ── */}
+        <div className="md:hidden relative w-full overflow-hidden" style={{ marginTop: '56px', height: '300px' }}>
           <img
             src="/boaz-portrait-light.png"
             alt="Boaz Leleina"
-            className="w-full h-[260px] md:h-full object-cover object-right-top"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'center 8%', filter: 'brightness(1.24) contrast(1.22)' }}
+          />
+          {/* Fades portrait into white at the bottom */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0) 25%, rgba(255,255,255,1) 96%)' }}
+          />
+        </div>
+
+        {/* ── Desktop portrait: absolute right half (hidden below md) ── */}
+        <div className="hidden md:block absolute inset-y-0 right-0 w-[48%] pointer-events-none z-0">
+          <img
+            src="/boaz-portrait-light.png"
+            alt="Boaz Leleina"
+            className="w-full h-full object-cover object-right-top"
             style={{
               filter: 'brightness(1.24) contrast(1.22)',
               WebkitMaskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 70%)',
@@ -207,32 +242,31 @@ export default function Overlay() {
           />
         </div>
 
-        {/* Hero text — left side */}
-        <div className="relative z-10 px-6 md:px-12 max-w-[58%] md:max-w-[54%] mb-10 mt-6 md:mt-0">
-          
-          <p className="text-[10px] md:text-[11px] font-bold tracking-[0.15em] md:tracking-[0.25em] uppercase mb-4 md:mb-8
-            text-slate-500 leading-relaxed md:leading-normal">
-            <span className="block md:inline text-slate-800 md:text-slate-500 mb-1 md:mb-0">Backend Engineer</span>
+        {/* ── Hero text ── */}
+        <div className="relative z-10 px-6 md:px-12 max-w-full md:max-w-[54%] pt-5 pb-16 md:pt-36">
+
+          <p className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase mb-4 md:mb-8
+            text-slate-500 leading-relaxed">
+            <span className="text-slate-800 md:text-slate-500">Backend Engineer</span>
             <span className="hidden md:inline"> — </span>
-            <span className="block md:inline">Seattle, WA</span>
+            <span className="text-slate-500"> Seattle, WA</span>
           </p>
 
           {/* Typewriter title */}
-          <h1 className="text-[clamp(26px,7vw,56px)] font-black leading-[1.1] md:leading-[1.05] tracking-tight
-            text-slate-900 mb-6 md:mb-10 font-mono break-words">
+          <h1 className="text-[clamp(32px,8vw,56px)] font-black leading-[1.05] tracking-tight
+            text-slate-900 mb-6 md:mb-10 font-mono">
             {display.map((line, i) => (
               <span key={i} className="block">
                 {line}
                 {i === currentLine && !done && (
-                  <span className="inline-block w-[3px] h-[1em] bg-blue-500 ml-1 align-middle
-                    animate-pulse" />
+                  <span className="inline-block w-[3px] h-[1em] bg-blue-500 ml-1 align-middle animate-pulse" />
                 )}
               </span>
             ))}
           </h1>
 
-          <div className="flex flex-col gap-5 md:pt-8 w-full md:w-auto">
-            <p className="text-xs md:text-sm text-slate-600 md:max-w-xs leading-relaxed">
+          <div className="flex flex-col gap-5 w-full md:w-auto md:pt-8">
+            <p className="text-xs md:text-sm text-slate-600 max-w-xs leading-relaxed">
               I leverage distributed systems, machine learning, and clean API architectures to solve real-world data and infrastructure challenges.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -266,19 +300,19 @@ export default function Overlay() {
               <div className="text-[11px] space-y-1.5 leading-relaxed">
                 <div className="text-slate-500 text-[10px]">// Parsing boaz-leleina-cv.pdf</div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">status</span> = <span className="text-emerald-300">"Open to Work"</span>;
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">status</span> = <span className="text-emerald-300">&quot;Open to Work&quot;</span>;
                 </div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">roles</span> = [<span className="text-emerald-300">"Backend"</span>, <span className="text-emerald-300">"Systems"</span>, <span className="text-emerald-300">"AI"</span>];
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">roles</span> = [<span className="text-emerald-300">&quot;Backend&quot;</span>, <span className="text-emerald-300">&quot;Systems&quot;</span>, <span className="text-emerald-300">&quot;AI&quot;</span>];
                 </div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">location</span> = <span className="text-emerald-300">"Seattle, WA"</span>;
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">location</span> = <span className="text-emerald-300">&quot;Seattle, WA&quot;</span>;
                 </div>
                 <div>
                   <span className="text-purple-400">const</span> <span className="text-blue-400">remote</span> = <span className="text-emerald-300">true</span>;
                 </div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">workAuth</span> = <span className="text-emerald-300">"US Authorized"</span>;
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">workAuth</span> = <span className="text-emerald-300">&quot;US Authorized&quot;</span>;
                   <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-1.5 align-middle animate-pulse" />
                 </div>
               </div>
