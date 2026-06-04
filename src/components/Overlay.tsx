@@ -149,7 +149,7 @@ export default function Overlay() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const { display, currentLine, done } = useTypewriter(['Zero Downtime.', 'Planet Scale.', 'Always Shipping.']);
+  const { display, currentLine, done } = useTypewriter(['Distributed Systems.', 'Machine Learning.', 'Backend Engineering.']);
 
   useEffect(() => {
     setMounted(true);
