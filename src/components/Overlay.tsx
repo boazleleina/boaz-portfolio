@@ -191,24 +191,24 @@ export default function Overlay() {
       </header>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[82svh] md:min-h-screen flex flex-col justify-center md:justify-start pt-28 md:pt-36 pb-12 md:pb-16">
+      <section className="relative min-h-[auto] md:min-h-screen flex flex-col justify-center md:justify-start pt-28 md:pt-36 pb-16 md:pb-16">
 
         {/* Portrait — top right corner on mobile, right side on desktop */}
-        <div className="absolute top-16 md:inset-y-0 right-0 w-[55%] sm:w-[50%] max-w-[260px] md:max-w-none md:w-[48%] pointer-events-none z-0">
+        <div className="absolute top-14 md:inset-y-0 right-0 w-[44%] sm:w-[42%] max-w-[200px] md:max-w-none md:w-[48%] pointer-events-none z-0">
           <img
             src="/boaz-portrait-light.png"
             alt="Boaz Leleina"
-            className="w-full h-[320px] md:h-full object-cover object-right-top"
+            className="w-full h-[260px] md:h-full object-cover object-right-top"
             style={{
               filter: 'brightness(1.24) contrast(1.22)',
-              WebkitMaskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%)',
-              maskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 70%)',
+              maskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 70%)',
             }}
           />
         </div>
 
         {/* Hero text — left side */}
-        <div className="relative z-10 px-6 md:px-12 max-w-[65%] md:max-w-[54%] mb-12 mt-8 md:mt-0">
+        <div className="relative z-10 px-6 md:px-12 max-w-[58%] md:max-w-[54%] mb-10 mt-6 md:mt-0">
           
           <p className="text-[10px] md:text-[11px] font-bold tracking-[0.15em] md:tracking-[0.25em] uppercase mb-4 md:mb-8
             text-slate-500 leading-relaxed md:leading-normal">
@@ -231,7 +231,7 @@ export default function Overlay() {
             ))}
           </h1>
 
-          <div className="flex flex-col gap-6 md:pt-8 w-[140%] md:w-auto">
+          <div className="flex flex-col gap-5 md:pt-8 w-full md:w-auto">
             <p className="text-xs md:text-sm text-slate-600 md:max-w-xs leading-relaxed">
               I leverage distributed systems, machine learning, and clean API architectures to solve real-world data and infrastructure challenges.
             </p>
@@ -288,14 +288,14 @@ export default function Overlay() {
       </section>
 
       {/* ── ABOUT ────────────────────────────────────────────────────────── */}
-      <section id="about" className="py-40 px-6 md:px-12 max-w-[1400px] mx-auto">
-        <div className="grid md:grid-cols-[180px_1fr] gap-16 items-start">
+      <section id="about" className="py-12 md:py-40 px-6 md:px-12 max-w-[1400px] mx-auto">
+        <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16 items-start">
           <div className="r">
             <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400
               md:sticky md:top-24">01 — About</p>
           </div>
           <div>
-            <p className="r text-2xl md:text-3xl font-light leading-relaxed text-slate-800 mb-14 tracking-tight">
+            <p className="r text-2xl md:text-3xl font-light leading-relaxed text-slate-800 mb-7 md:mb-14 tracking-tight">
               From Samburu, Kenya to Silicon Valley. I build data pipelines,
               intelligent software agents, and machine learning models
               engineered to solve environmental and resource challenges at scale.
@@ -326,8 +326,8 @@ export default function Overlay() {
         <TimelineLine />
 
         {/* ── EDUCATION ────────────────────────────────────────────────────── */}
-        <section id="education" className="py-20 relative z-10">
-          <div className="grid md:grid-cols-[180px_1fr] gap-16">
+        <section id="education" className="py-10 md:py-20 relative z-10">
+          <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 02 — Education
@@ -372,8 +372,8 @@ export default function Overlay() {
         </section>
 
         {/* ── EXPERIENCE ───────────────────────────────────────────────────── */}
-        <section id="experience" className="py-20 relative z-10">
-          <div className="grid md:grid-cols-[180px_1fr] gap-16">
+        <section id="experience" className="py-10 md:py-20 relative z-10">
+          <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 03 — Experience
@@ -424,8 +424,8 @@ export default function Overlay() {
         </section>
 
         {/* ── WORK ─────────────────────────────────────────────────────────── */}
-        <section id="work" className="py-20 relative z-10">
-          <div className="grid md:grid-cols-[180px_1fr] gap-16 mb-0">
+        <section id="work" className="py-10 md:py-20 relative z-10">
+          <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16 mb-0">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 04 — Work
@@ -434,25 +434,25 @@ export default function Overlay() {
             <div className="space-y-0">
               {[
                 {
-                  no: '01',
+                  no: '✦',
                   title: 'Pastoralist Migration ML Model',
                   tags: ['Python', 'Jupyter', 'Scikit-Learn', 'Pandas'],
                   desc: 'A machine learning model mapping pastoralist herd migration patterns in Samburu, Kenya, using climate, rainfall, and NDVI vegetation datasets to optimize grazing resources.',
                 },
                 {
-                  no: '02',
+                  no: '✧',
                   title: 'LLM Resume Agent',
                   tags: ['Python', 'NLP', 'LLM', 'API'],
                   desc: 'An autonomous agent that reads resumes, compares them against job descriptions, outputs compatibility scores, and suggests semantic updates.',
                 },
                 {
-                  no: '03',
+                  no: '✶',
                   title: 'Movies Data Science Pipeline',
                   tags: ['Python', 'Pandas', 'Matplotlib', 'Seaborn'],
                   desc: 'A complete data science pipeline ingesting raw movie databases, performing data cleaning, parsing structural outliers, and rendering descriptive trend visualizations.',
                 },
                 {
-                  no: '04',
+                  no: '✱',
                   title: 'Yelp API Ingestion Pipeline',
                   tags: ['Python', 'Yelp API', 'REST', 'JSON'],
                   desc: 'An API client handling REST pagination, rate limiting, and complex JSON data serialization to build localized geographic datasets.',
@@ -460,7 +460,7 @@ export default function Overlay() {
               ].map(({ no, title, tags, desc }) => (
                 <TimelineItem key={no}>
                   <div className="group flex gap-4 sm:gap-8 transition-colors">
-                    <span className="font-mono text-[10px] text-slate-400 mt-1 shrink-0">{no}</span>
+                    <span className="font-mono text-[11px] font-bold text-blue-400 mt-1 shrink-0 tracking-widest">{no}</span>
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 leading-snug">{title}</h3>
@@ -484,8 +484,8 @@ export default function Overlay() {
       </div>
 
       {/* ── CONTACT ──────────────────────────────────────────────────────── */}
-      <section id="contact" className="py-24 md:py-40 px-6 md:px-12 max-w-[1400px] mx-auto">
-        <div className="grid md:grid-cols-[180px_1fr] gap-8 md:gap-16 items-start md:items-end">
+      <section id="contact" className="py-12 md:py-40 px-6 md:px-12 max-w-[1400px] mx-auto">
+        <div className="grid md:grid-cols-[180px_1fr] gap-5 md:gap-16 items-start md:items-end">
           <div className="r mb-2 md:mb-0">
             <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400">
               05 — Contact
