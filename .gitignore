@@ -1,4 +1,6 @@
-node_modules
-
 node_modules/
+.next/
+out/
 .vercel
+*.log
+.DS_Store
