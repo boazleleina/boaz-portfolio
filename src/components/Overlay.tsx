@@ -35,7 +35,6 @@ function useTypewriter(lines: string[], speed = 60, linePause = 400) {
       if (!active) return;
       if (lineIdx >= lines.length) {
         setDone(true);
-        timer = setTimeout(reset, 2200); // pause 2.2s then loop
         return;
       }
       setCurrentLine(lineIdx);
@@ -149,7 +148,7 @@ export default function Overlay() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const { display, currentLine, done } = useTypewriter(['Distributed Systems.', 'Machine Learning.', 'Backend Engineering.']);
+  const { display, currentLine, done } = useTypewriter(['Clean APIs.', 'ML Pipelines.', 'Solid Systems.']);
 
   useEffect(() => {
     setMounted(true);
