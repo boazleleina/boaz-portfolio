@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"app\\\\page.tsx -> @/components/Overlay\":{\"id\":\"app\\\\page.tsx -> @/components/Overlay\",\"files\":[\"static/chunks/_app-pages-browser_src_components_Overlay_tsx.js\"]}}"
