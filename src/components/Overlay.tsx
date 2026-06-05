@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, X, Menu } from 'lucide-react';
 import Logo from './Logo';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -94,7 +94,7 @@ function TimelineLine() {
   return (
     <div 
       ref={lineRef}
-      className="absolute left-[31px] md:left-[303px] top-[120px] bottom-[120px] w-[2px] bg-slate-100 dark:bg-slate-800/40 z-10 pointer-events-none origin-top"
+      className="absolute left-[31px] md:left-[232px] lg:left-[303px] top-[120px] bottom-[120px] w-[2px] bg-slate-100 dark:bg-slate-800/40 z-10 pointer-events-none origin-top"
     >
       <div 
         ref={progressRef}
@@ -133,7 +133,7 @@ function TimelineItem({ children }: { children: React.ReactNode }) {
     <div ref={itemRef} className="r relative pl-6 sm:pl-12 py-10 cursor-default group">
       {/* Timeline Dot positioned exactly on the line, preventing squish by eliminating wrapper */}
       <div 
-        className={`absolute left-[1px] md:left-[5px] top-[48px] w-3 h-3 rounded-full transition-all duration-500 border-2 z-20 shrink-0 ${
+        className={`absolute left-[1px] md:left-[3px] lg:left-[5px] top-[48px] w-3 h-3 rounded-full transition-all duration-500 border-2 z-20 shrink-0 ${
           isActive 
             ? 'bg-blue-500 scale-110 border-white dark:border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]' 
             : 'bg-slate-200 dark:bg-slate-800 border-white dark:border-slate-900 shadow-sm'
@@ -147,6 +147,7 @@ function TimelineItem({ children }: { children: React.ReactNode }) {
 export default function Overlay() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { display, currentLine, done } = useTypewriter(['Clean APIs.', 'ML Pipelines.', 'Solid Systems.']);
 
@@ -174,21 +175,34 @@ export default function Overlay() {
     };
   }, []);
 
+  // Close menu on route navigation
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  const mobileNavLinks = [
+    { href: '/#about', label: 'About' },
+    { href: '/#education', label: 'Education' },
+    { href: '/#experience', label: 'Experience' },
+    { href: '/#work', label: 'Work' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/gallery', label: 'Gallery' },
+    { href: '/#contact', label: 'Contact' },
+  ];
+
   return (
     <div className="w-full font-sans text-slate-900 selection:bg-blue-500 selection:text-white">
 
       {/* ── NAV ──────────────────────────────────────────────────────────── */}
       <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/40 backdrop-blur-md border-b border-slate-200/20 shadow-sm' : 'bg-white/95'
+        scrolled ? 'bg-white/60 backdrop-blur-md border-b border-slate-200/20 shadow-sm' : 'bg-white/95'
       }`}>
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-14 flex items-center justify-between bg-transparent">
+        <div className="max-w-[1400px] mx-auto px-5 lg:px-12 h-14 flex items-center justify-between bg-transparent">
           <Link href="/" className="group flex items-center gap-2.5 text-sm font-bold tracking-tight text-slate-900">
             <Logo />
             <span>Boaz Leleina</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-10 text-[11px] font-bold tracking-[0.18em] uppercase
-            text-slate-500">
+          {/* Desktop nav — only visible at lg (1024px+) */}
+          <nav className="hidden lg:flex items-center gap-8 xl:gap-10 text-[11px] font-bold tracking-[0.18em] uppercase text-slate-500">
             <Link href="/#about" className="hover:text-black transition-colors">About</Link>
             <Link href="/#education" className="hover:text-black transition-colors">Education</Link>
             <Link href="/#experience" className="hover:text-black transition-colors">Experience</Link>
@@ -198,62 +212,107 @@ export default function Overlay() {
             <Link href="/#contact" className="hover:text-black transition-colors">Contact</Link>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3">
+            {/* Hire me — desktop only */}
             <a href="mailto:boazleleina3@gmail.com"
-              className="text-[11px] font-bold tracking-wider uppercase px-4 py-2 rounded-full
-                bg-slate-100
-                hover:bg-black hover:text-white transition-all duration-200">
+              className="hidden lg:inline-flex text-[11px] font-bold tracking-wider uppercase px-4 py-2 rounded-full
+                bg-slate-100 hover:bg-black hover:text-white transition-all duration-200">
               Hire me
             </a>
+
+            {/* Hamburger — mobile & tablet (< lg) */}
+            <button
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+              aria-label="Toggle menu"
+              className="lg:hidden relative z-50 flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all duration-200"
+            >
+              {mobileMenuOpen
+                ? <X className="w-4 h-4 text-slate-700" />
+                : <Menu className="w-4 h-4 text-slate-700" />}
+            </button>
+          </div>
+        </div>
+
+        {/* ── Slide-down menu — mobile & tablet (< lg) ──────────────────────── */}
+        <div
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            mobileMenuOpen ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="mx-4 mb-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
+            {/* Nav links — 2 cols on phones, 4 cols on tablets */}
+            <nav className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-100/80 border-b border-slate-100">
+              {mobileNavLinks.map(({ href, label }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center py-4 px-4 text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 bg-white hover:bg-slate-50 hover:text-slate-900 transition-all duration-150"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+            {/* Hire me CTA */}
+            <div className="px-4 py-3 flex items-center justify-between">
+              <span className="text-[9px] font-bold tracking-widest uppercase text-slate-400">Available for work</span>
+              <a
+                href="mailto:boazleleina3@gmail.com"
+                onClick={closeMobileMenu}
+                className="text-[10px] font-bold tracking-wider uppercase px-5 py-2 rounded-full bg-black text-white hover:bg-slate-800 transition-all duration-200"
+              >
+                Hire me
+              </a>
+            </div>
           </div>
         </div>
       </header>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative md:min-h-screen">
+      <section className="relative xl:min-h-screen">
 
-        {/* ── Mobile portrait: stacks above text (hidden md+) ── */}
-        <div className="md:hidden relative w-full overflow-hidden" style={{ marginTop: '56px', height: '300px' }}>
+        {/* ── Phone only: stacked portrait above text (hidden sm+) ── */}
+        <div className="sm:hidden relative w-full overflow-hidden" style={{ marginTop: '56px', height: '320px' }}>
           <img
             src="/boaz-portrait-light.png"
             alt="Boaz Leleina"
             className="w-full h-full object-cover"
-            style={{ objectPosition: 'center 8%', filter: 'brightness(1.24) contrast(1.22)' }}
+            style={{ objectPosition: 'center 18%', filter: 'brightness(1.24) contrast(1.22)' }}
           />
-          {/* Fades portrait into white at the bottom */}
           <div
             className="absolute inset-0"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0) 25%, rgba(255,255,255,1) 96%)' }}
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0) 35%, rgba(255,255,255,1) 97%)' }}
           />
         </div>
 
-        {/* ── Desktop portrait: absolute right half (hidden below md) ── */}
-        <div className="hidden md:block absolute inset-y-0 right-0 w-[48%] pointer-events-none z-0">
+        {/* ── Tablet + Desktop: portrait pinned to right (sm+) ── */}
+        <div className="hidden sm:block absolute inset-y-0 right-0 w-[48%] md:w-[46%] lg:w-[48%] sm:top-14 lg:top-0 pointer-events-none z-0">
           <img
             src="/boaz-portrait-light.png"
             alt="Boaz Leleina"
-            className="w-full h-full object-cover object-right-top"
+            className="w-full h-full object-cover"
             style={{
+              objectPosition: 'center 10%',
               filter: 'brightness(1.24) contrast(1.22)',
-              WebkitMaskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 70%)',
-              maskImage: 'radial-gradient(ellipse at 100% 30%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 70%)',
+              WebkitMaskImage: 'radial-gradient(ellipse at 90% 25%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 68%)',
+              maskImage: 'radial-gradient(ellipse at 90% 25%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 68%)',
             }}
           />
         </div>
 
         {/* ── Hero text ── */}
-        <div className="relative z-10 px-6 md:px-12 max-w-full md:max-w-[54%] pt-5 pb-16 md:pt-36">
+        <div className="relative z-10 px-6 sm:px-8 md:px-10 lg:px-12 max-w-full sm:max-w-[58%] md:max-w-[55%] lg:max-w-[54%] pt-4 sm:pt-24 md:pt-28 lg:pt-36 pb-16">
 
           <p className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase mb-4 md:mb-8
             text-slate-500 leading-relaxed">
-            <span className="text-slate-800 md:text-slate-500">Backend Engineer</span>
-            <span className="hidden md:inline"> — </span>
+            <span className="text-slate-800 sm:text-slate-500">Backend Engineer</span>
+            <span className="hidden sm:inline"> — </span>
             <span className="text-slate-500"> Seattle, WA</span>
           </p>
 
           {/* Typewriter title */}
-          <h1 className="text-[clamp(32px,8vw,56px)] font-black leading-[1.05] tracking-tight
-            text-slate-900 mb-6 md:mb-10 font-mono">
+          <h1 className="text-[clamp(30px,7vw,52px)] sm:text-[clamp(26px,4vw,42px)] md:text-[clamp(28px,3.8vw,44px)] lg:text-[clamp(36px,4vw,56px)] font-black leading-[1.05] tracking-tight
+            text-slate-900 mb-6 md:mb-8 lg:mb-10 font-mono">
             {display.map((line, i) => (
               <span key={i} className="block">
                 {line}
@@ -264,7 +323,7 @@ export default function Overlay() {
             ))}
           </h1>
 
-          <div className="flex flex-col gap-5 w-full md:w-auto md:pt-8">
+          <div className="flex flex-col gap-5 w-full sm:w-auto sm:pt-2 md:pt-4 lg:pt-8">
             <p className="text-xs md:text-sm text-slate-600 max-w-xs leading-relaxed">
               I leverage distributed systems, machine learning, and clean API architectures to solve real-world data and infrastructure challenges.
             </p>
@@ -287,7 +346,7 @@ export default function Overlay() {
             </div>
 
             {/* AI-Generated Recruiter Console */}
-            <div className="mt-4 md:mt-6 p-4 sm:p-5 rounded-2xl bg-[#090D16] text-slate-300 border border-slate-800 w-full max-w-sm font-mono shadow-xl relative overflow-hidden hidden md:block">
+            <div className="mt-4 lg:mt-6 p-4 rounded-2xl bg-[#090D16] text-slate-300 border border-slate-800 w-full max-w-xs lg:max-w-sm font-mono shadow-xl relative overflow-hidden hidden lg:block">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">
                 <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -321,8 +380,8 @@ export default function Overlay() {
       </section>
 
       {/* ── ABOUT ────────────────────────────────────────────────────────── */}
-      <section id="about" className="py-12 md:py-40 px-6 md:px-12 max-w-[1400px] mx-auto">
-        <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16 items-start">
+      <section id="about" className="py-12 md:py-24 lg:py-40 px-6 md:px-10 lg:px-12 max-w-[1400px] mx-auto">
+        <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16 items-start">
           <div className="r">
             <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400
               md:sticky md:top-24">01 — About</p>
@@ -354,13 +413,13 @@ export default function Overlay() {
       </section>
 
       {/* ── TIMELINE CONTAINER ───────────────────────────────────────────── */}
-      <div className="relative max-w-[1400px] mx-auto px-6 md:px-12">
+      <div className="relative max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
         {/* Continuous Scroll Progress Timeline Line */}
         <TimelineLine />
 
         {/* ── EDUCATION ────────────────────────────────────────────────────── */}
-        <section id="education" className="py-10 md:py-20 relative z-10">
-          <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16">
+        <section id="education" className="py-10 md:py-14 lg:py-20 relative z-10">
+          <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 02 — Education
@@ -405,8 +464,8 @@ export default function Overlay() {
         </section>
 
         {/* ── EXPERIENCE ───────────────────────────────────────────────────── */}
-        <section id="experience" className="py-10 md:py-20 relative z-10">
-          <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16">
+        <section id="experience" className="py-10 md:py-14 lg:py-20 relative z-10">
+          <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 03 — Experience
@@ -457,8 +516,8 @@ export default function Overlay() {
         </section>
 
         {/* ── WORK ─────────────────────────────────────────────────────────── */}
-        <section id="work" className="py-10 md:py-20 relative z-10">
-          <div className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-16 mb-0">
+        <section id="work" className="py-10 md:py-14 lg:py-20 relative z-10">
+          <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16 mb-0">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 04 — Work
@@ -517,8 +576,8 @@ export default function Overlay() {
       </div>
 
       {/* ── CONTACT ──────────────────────────────────────────────────────── */}
-      <section id="contact" className="py-12 md:py-40 px-6 md:px-12 max-w-[1400px] mx-auto">
-        <div className="grid md:grid-cols-[180px_1fr] gap-5 md:gap-16 items-start md:items-end">
+      <section id="contact" className="py-12 md:py-24 lg:py-40 px-6 md:px-10 lg:px-12 max-w-[1400px] mx-auto">
+        <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-5 md:gap-10 lg:gap-16 items-start md:items-end">
           <div className="r mb-2 md:mb-0">
             <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400">
               05 — Contact
@@ -557,7 +616,7 @@ export default function Overlay() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer className="px-6 md:px-12 py-8 max-w-[1400px] mx-auto flex items-center justify-between">
+      <footer className="px-6 md:px-10 lg:px-12 py-8 max-w-[1400px] mx-auto flex items-center justify-between">
         <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
           © {new Date().getFullYear()} Boaz Leleina
         </span>
