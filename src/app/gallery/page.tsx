@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { ChevronLeft, ChevronRight, X, ZoomIn, Heart, Droplets } from 'lucide-react';
-import Logo from '@/components/Logo';
+import Navbar from '@/components/Navbar';
 
 interface GalleryItem {
   id: number;
@@ -133,21 +132,11 @@ const CATEGORIES = ['All', 'Water Access', 'Infrastructure', 'Community', 'Impac
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const [scrolled, setScrolled] = useState(false);
 
   // Filter items based on selected category
   const filteredItems = selectedCategory === 'All'
     ? GALLERY_ITEMS
     : GALLERY_ITEMS.filter(item => item.category === selectedCategory);
-
-  // Scroll listener for transparent header
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Keyboard navigation for lightbox
   useEffect(() => {
@@ -169,35 +158,8 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-sans text-slate-900 selection:bg-blue-500 selection:text-white">
-      
-      {/* ── NAV ──────────────────────────────────────────────────────────── */}
-      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/40 backdrop-blur-md border-b border-slate-200/20 shadow-sm' : 'bg-white/95'
-      }`}>
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-14 flex items-center justify-between bg-transparent">
-          <Link href="/" className="group flex items-center gap-2.5 text-sm font-bold tracking-tight text-slate-900">
-            <Logo />
-            <span>Boaz Leleina</span>
-          </Link>
 
-          <nav className="hidden md:flex items-center gap-10 text-[11px] font-bold tracking-[0.18em] uppercase text-slate-500">
-            <Link href="/#about" className="hover:text-black transition-colors">About</Link>
-            <Link href="/#education" className="hover:text-black transition-colors">Education</Link>
-            <Link href="/#experience" className="hover:text-black transition-colors">Experience</Link>
-            <Link href="/#work" className="hover:text-black transition-colors">Work</Link>
-            <Link href="/blog" className="hover:text-black transition-colors">Blog</Link>
-            <Link href="/gallery" className="text-black transition-colors">Gallery</Link>
-            <Link href="/#contact" className="hover:text-black transition-colors">Contact</Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <a href="mailto:boazleleina3@gmail.com"
-              className="text-[11px] font-bold tracking-wider uppercase px-4 py-2 rounded-full bg-slate-100 hover:bg-black hover:text-white transition-all duration-200">
-              Hire me
-            </a>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
       <main className="max-w-[1400px] mx-auto px-6 md:px-12 pt-32 pb-24">

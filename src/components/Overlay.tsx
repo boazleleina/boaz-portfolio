@@ -2,10 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, Download, X, Menu } from 'lucide-react';
-import Logo from './Logo';
+import { ArrowUpRight, Download } from 'lucide-react';
+import Navbar from './Navbar';
+import { PROJECTS } from '@/data/projects';
+
+// Three.js particle canvas — client only (uses WebGL/window).
+const Experience = dynamic(() => import('./Experience'), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -146,18 +151,13 @@ function TimelineItem({ children }: { children: React.ReactNode }) {
 
 export default function Overlay() {
   const [mounted, setMounted] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const heroImgRef = useRef<HTMLImageElement>(null);
+  const heroCanvasRef = useRef<HTMLDivElement>(null);
 
   const { display, currentLine, done } = useTypewriter(['Clean APIs.', 'ML Pipelines.', 'Solid Systems.']);
 
   useEffect(() => {
     setMounted(true);
-
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
 
     gsap.utils.toArray<HTMLElement>('.r').forEach((el) => {
       gsap.fromTo(el,
@@ -169,107 +169,33 @@ export default function Overlay() {
       );
     });
 
+    // Crossfade the crisp photo out and the particle canvas in over the first
+    // slice of hero scroll — so the portrait stays pixel-sharp until the snap.
+    const fade = ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true,
+      onUpdate(self) {
+        const f = Math.min(1, self.progress * 8); // fully swapped by ~12% scroll
+        if (heroImgRef.current) heroImgRef.current.style.opacity = String(1 - f);
+        if (heroCanvasRef.current) heroCanvasRef.current.style.opacity = String(f);
+      },
+    });
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      fade.kill();
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
 
-  // Close menu on route navigation
-  const closeMobileMenu = () => setMobileMenuOpen(false);
-
-  const mobileNavLinks = [
-    { href: '/#about', label: 'About' },
-    { href: '/#education', label: 'Education' },
-    { href: '/#experience', label: 'Experience' },
-    { href: '/#work', label: 'Work' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/gallery', label: 'Gallery' },
-    { href: '/#contact', label: 'Contact' },
-  ];
-
   return (
     <div className="w-full font-sans text-slate-900 selection:bg-blue-500 selection:text-white">
 
-      {/* ── NAV ──────────────────────────────────────────────────────────── */}
-      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/60 backdrop-blur-md border-b border-slate-200/20 shadow-sm' : 'bg-white/95'
-      }`}>
-        <div className="max-w-[1400px] mx-auto px-5 lg:px-12 h-14 flex items-center justify-between bg-transparent">
-          <Link href="/" className="group flex items-center gap-2.5 text-sm font-bold tracking-tight text-slate-900">
-            <Logo />
-            <span>Boaz Leleina</span>
-          </Link>
-
-          {/* Desktop nav — only visible at lg (1024px+) */}
-          <nav className="hidden lg:flex items-center gap-8 xl:gap-10 text-[11px] font-bold tracking-[0.18em] uppercase text-slate-500">
-            <Link href="/#about" className="hover:text-black transition-colors">About</Link>
-            <Link href="/#education" className="hover:text-black transition-colors">Education</Link>
-            <Link href="/#experience" className="hover:text-black transition-colors">Experience</Link>
-            <Link href="/#work" className="hover:text-black transition-colors">Work</Link>
-            <Link href="/blog" className="hover:text-black transition-colors">Blog</Link>
-            <Link href="/gallery" className="hover:text-black transition-colors">Gallery</Link>
-            <Link href="/#contact" className="hover:text-black transition-colors">Contact</Link>
-          </nav>
-
-          <div className="flex items-center gap-2 lg:gap-3">
-            {/* Hire me — desktop only */}
-            <a href="mailto:boazleleina3@gmail.com"
-              className="hidden lg:inline-flex text-[11px] font-bold tracking-wider uppercase px-4 py-2 rounded-full
-                bg-slate-100 hover:bg-black hover:text-white transition-all duration-200">
-              Hire me
-            </a>
-
-            {/* Hamburger — mobile & tablet (< lg) */}
-            <button
-              onClick={() => setMobileMenuOpen(prev => !prev)}
-              aria-label="Toggle menu"
-              className="lg:hidden relative z-50 flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all duration-200"
-            >
-              {mobileMenuOpen
-                ? <X className="w-4 h-4 text-slate-700" />
-                : <Menu className="w-4 h-4 text-slate-700" />}
-            </button>
-          </div>
-        </div>
-
-        {/* ── Slide-down menu — mobile & tablet (< lg) ──────────────────────── */}
-        <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            mobileMenuOpen ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="mx-4 mb-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
-            {/* Nav links — 2 cols on phones, 4 cols on tablets */}
-            <nav className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-100/80 border-b border-slate-100">
-              {mobileNavLinks.map(({ href, label }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={closeMobileMenu}
-                  className="flex items-center justify-center py-4 px-4 text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 bg-white hover:bg-slate-50 hover:text-slate-900 transition-all duration-150"
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-            {/* Hire me CTA */}
-            <div className="px-4 py-3 flex items-center justify-between">
-              <span className="text-[9px] font-bold tracking-widest uppercase text-slate-400">Available for work</span>
-              <a
-                href="mailto:boazleleina3@gmail.com"
-                onClick={closeMobileMenu}
-                className="text-[10px] font-bold tracking-wider uppercase px-5 py-2 rounded-full bg-black text-white hover:bg-slate-800 transition-all duration-200"
-              >
-                Hire me
-              </a>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative xl:min-h-screen">
+      <section id="hero" className="relative xl:min-h-screen">
 
         {/* ── Phone only: stacked portrait above text (hidden sm+) ── */}
         <div className="sm:hidden relative w-full overflow-hidden" style={{ marginTop: '56px', height: '320px' }}>
@@ -286,11 +212,14 @@ export default function Overlay() {
         </div>
 
         {/* ── Tablet + Desktop: portrait pinned to right (sm+) ── */}
-        <div className="hidden sm:block absolute inset-y-0 right-0 w-[48%] md:w-[46%] lg:w-[48%] sm:top-14 lg:top-0 pointer-events-none z-0">
+        {/* Crisp photo at rest; crossfades into the particle canvas, which
+            disintegrates on scroll (Thanos snap) and reacts to the mouse. */}
+        <div className="hidden sm:block absolute inset-y-0 right-0 w-[55%] md:w-[52%] lg:w-[54%] sm:top-14 lg:top-0 pointer-events-none z-0">
           <img
+            ref={heroImgRef}
             src="/boaz-portrait-light.png"
             alt="Boaz Leleina"
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             style={{
               objectPosition: 'center 10%',
               filter: 'brightness(1.24) contrast(1.22)',
@@ -298,6 +227,9 @@ export default function Overlay() {
               maskImage: 'radial-gradient(ellipse at 90% 25%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 68%)',
             }}
           />
+          <div ref={heroCanvasRef} className="absolute inset-0" style={{ opacity: 0 }}>
+            <Experience />
+          </div>
         </div>
 
         {/* ── Hero text ── */}
@@ -520,43 +452,18 @@ export default function Overlay() {
           <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16 mb-0">
             <div className="r pl-8 md:pl-0">
               <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
-                04 — Work
+                04 — Projects
               </p>
             </div>
             <div className="space-y-0">
-              {[
-                {
-                  no: '✦',
-                  title: 'Pastoralist Migration ML Model',
-                  tags: ['Python', 'Jupyter', 'Scikit-Learn', 'Pandas'],
-                  desc: 'A machine learning model mapping pastoralist herd migration patterns in Samburu, Kenya, using climate, rainfall, and NDVI vegetation datasets to optimize grazing resources.',
-                },
-                {
-                  no: '✧',
-                  title: 'LLM Resume Agent',
-                  tags: ['Python', 'NLP', 'LLM', 'API'],
-                  desc: 'An autonomous agent that reads resumes, compares them against job descriptions, outputs compatibility scores, and suggests semantic updates.',
-                },
-                {
-                  no: '✶',
-                  title: 'Movies Data Science Pipeline',
-                  tags: ['Python', 'Pandas', 'Matplotlib', 'Seaborn'],
-                  desc: 'A complete data science pipeline ingesting raw movie databases, performing data cleaning, parsing structural outliers, and rendering descriptive trend visualizations.',
-                },
-                {
-                  no: '✱',
-                  title: 'Yelp API Ingestion Pipeline',
-                  tags: ['Python', 'Yelp API', 'REST', 'JSON'],
-                  desc: 'An API client handling REST pagination, rate limiting, and complex JSON data serialization to build localized geographic datasets.',
-                },
-              ].map(({ no, title, tags, desc }) => (
-                <TimelineItem key={no}>
-                  <div className="group flex gap-4 sm:gap-8 transition-colors">
+              {PROJECTS.map(({ slug, no, title, tags, desc }) => (
+                <TimelineItem key={slug}>
+                  <Link href={`/projects/${slug}`} className="group flex gap-4 sm:gap-8 transition-colors" aria-label={`View ${title} demo`}>
                     <span className="font-mono text-[11px] font-bold text-blue-400 mt-1 shrink-0 tracking-widest">{no}</span>
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4 mb-3">
-                        <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 leading-snug">{title}</h3>
-                        <ArrowUpRight className="w-4 h-4 shrink-0 mt-0.5 text-slate-300 group-hover:text-black transition-colors" />
+                        <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">{title}</h3>
+                        <ArrowUpRight className="w-4 h-4 shrink-0 mt-0.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
                       </div>
                       <p className="text-sm text-slate-600 leading-relaxed mb-4 max-w-lg">{desc}</p>
                       <div className="flex flex-wrap gap-2">
@@ -567,7 +474,7 @@ export default function Overlay() {
                         ))}
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </TimelineItem>
               ))}
             </div>

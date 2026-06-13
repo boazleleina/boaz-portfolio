@@ -20,7 +20,8 @@ uniform float uDrop;
 uniform float uTime;
 uniform float uSize;
 uniform float uIsDark;
-uniform vec3  uMouse;
+uniform vec3  uMouse;    // cursor in world coords (for repel)
+uniform vec2  uMouseN;   // cursor normalized -1..1 (for parallax)
 
 attribute vec3  color;
 attribute vec3  aTarget;   // random scatter target position (within canvas)
@@ -50,19 +51,22 @@ void main() {
 
     vec3 finalPos = scattered + sway;
 
-    // Displace clothing particles only when mouse hovers near them
-    if (aIsClothing > 0.5) {
-        float dist = distance(finalPos.xy, uMouse.xy);
-        if (dist < 100.0) {
-            float force = (1.0 - (dist / 100.0));
-            // Push away from mouse
-            vec2 dir = normalize(finalPos.xy - uMouse.xy);
-            
-            // Apply push force + dynamic hover swirl
-            finalPos.x += dir.x * force * 35.0 + sin(uTime * 5.0 + aRandom * 6.28) * force * 8.0;
-            finalPos.y += dir.y * force * 35.0 + cos(uTime * 5.0 + aRandom * 6.28) * force * 8.0;
-            finalPos.z += force * 20.0;
-        }
+    // Mouse interactivity — only while assembled (fades out as it scatters).
+    float assembled = 1.0 - t;
+
+    // 1) Depth parallax: portrait gently shifts with the cursor (PC).
+    finalPos.x += uMouseN.x * 18.0 * assembled * (0.4 + aRandom);
+    finalPos.y += uMouseN.y * 18.0 * assembled * (0.4 + aRandom);
+
+    // 2) Repel: all particles part around the cursor as it moves over them.
+    float md = distance(finalPos.xy, uMouse.xy);
+    if (md < 130.0) {
+        float force = 1.0 - (md / 130.0);
+        vec2 dir = normalize(finalPos.xy - uMouse.xy);
+        float swirl = (aIsClothing > 0.5) ? 8.0 : 0.0; // extra swirl on the shuka
+        finalPos.x += dir.x * force * 26.0 * assembled + sin(uTime * 5.0 + aRandom * 6.28) * force * swirl;
+        finalPos.y += dir.y * force * 26.0 * assembled + cos(uTime * 5.0 + aRandom * 6.28) * force * swirl;
+        finalPos.z += force * 18.0 * assembled;
     }
 
     vPosition = finalPos;
@@ -94,17 +98,17 @@ void main() {
     float edge   = mix(0.2, 0.05, uIsDark);
     float soft   = smoothstep(0.5, edge, dist);
 
-    // When assembled: radial fade gives organic portrait shape
-    // When scattered: no fade so all particles stay visible
-    float radial = mix(smoothstep(280.0, 120.0, length(vPosition.xy)), 1.0, uDrop);
-    float fadeB  = mix(smoothstep(-320.0, -160.0, vPosition.y), 1.0, uDrop);
+    // Keep the face fully solid; only the far outer edge feathers out so the
+    // portrait reads crisp when assembled. No fade once scattered.
+    float radial = mix(smoothstep(360.0, 250.0, length(vPosition.xy)), 1.0, uDrop);
+    float fadeB  = mix(smoothstep(-360.0, -260.0, vPosition.y), 1.0, uDrop);
 
     float alpha = soft * radial * fadeB;
 
     // Dark mode: boost colors so they glow on black bg
-    // Light mode: use natural/slightly brighter photo colors to fit white theme
+    // Light mode: brighten/contrast to match the original photo's filter.
     vec3 forDark  = min(vColor * 3.2, 1.0);
-    vec3 forLight = min(vColor * 1.1, 1.0);
+    vec3 forLight = min((vColor - 0.5) * 1.22 + 0.5 + 0.04, 1.0); // contrast 1.22 + brightness
     vec3 final    = mix(forLight, forDark, uIsDark);
 
     gl_FragColor = vec4(final, alpha);
@@ -117,7 +121,10 @@ void main() {
 export default function ParticleSystem({ isDark = true }: { isDark?: boolean }) {
   const { gl } = useThree();
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const mouseRef = useRef({ x: -9999, y: -9999, targetX: -9999, targetY: -9999 });
+  const mouseRef = useRef({
+    x: -9999, y: -9999, targetX: -9999, targetY: -9999,
+    nx: 0, ny: 0, targetNX: 0, targetNY: 0,
+  });
 
   const [geo, setGeo] = useState<{
     positions: Float32Array;
@@ -144,11 +151,15 @@ export default function ParticleSystem({ isDark = true }: { isDark?: boolean }) 
       
       mouseRef.current.targetX = wx;
       mouseRef.current.targetY = wy;
+      mouseRef.current.targetNX = nx;
+      mouseRef.current.targetNY = ny;
     };
 
     const handleMouseLeave = () => {
       mouseRef.current.targetX = -9999;
       mouseRef.current.targetY = -9999;
+      mouseRef.current.targetNX = 0;
+      mouseRef.current.targetNY = 0;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -175,13 +186,15 @@ export default function ParticleSystem({ isDark = true }: { isDark?: boolean }) 
       const cv = document.createElement('canvas');
       const ctx = cv.getContext('2d')!;
 
-      const W = 200;
+      // Higher sample resolution = denser particles = sharper portrait.
+      const W = 320;
       cv.width = W;
       cv.height = Math.floor(image.height * (W / image.width));
       ctx.drawImage(image, 0, 0, cv.width, cv.height);
 
       const px = ctx.getImageData(0, 0, cv.width, cv.height).data;
-      const SCALE = 2.8;
+      // Keep the portrait's world size constant as W changes (W * SCALE ≈ 560).
+      const SCALE = 560 / W;
 
       // Scatter bounds — keep particles within the canvas frame
       const BX = cv.width / 2 * SCALE * 0.9;  // ≈±252
@@ -242,19 +255,24 @@ export default function ParticleSystem({ isDark = true }: { isDark?: boolean }) 
   }, [isDark]);
 
   // ── SCROLL → uDrop ──────────────────────────────────────────────────────
-  // sin(progress × π):  top=0 (portrait) → mid=1 (scattered) → bottom=0 (reformed)
+  // Confined to the hero: intact portrait at top (uDrop=0); disintegrates and
+  // drifts away as the hero scrolls out of view (uDrop→1). Reassembles on the
+  // way back up. The "Thanos snap" effect.
   useEffect(() => {
     if (!materialRef.current) return;
 
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
-        trigger: document.body,
+        trigger: hero,
         start: 'top top',
-        end: 'bottom bottom',
-        scrub: 2.5,
+        end: 'bottom top',
+        scrub: 1.5,
         onUpdate(self) {
           if (materialRef.current) {
-            materialRef.current.uniforms.uDrop.value = Math.sin(self.progress * Math.PI);
+            materialRef.current.uniforms.uDrop.value = self.progress;
           }
         },
       });
@@ -279,16 +297,20 @@ export default function ParticleSystem({ isDark = true }: { isDark?: boolean }) 
       const m = mouseRef.current;
       m.x += (m.targetX - m.x) * 0.1;
       m.y += (m.targetY - m.y) * 0.1;
+      m.nx += (m.targetNX - m.nx) * 0.06;
+      m.ny += (m.targetNY - m.ny) * 0.06;
       materialRef.current.uniforms.uMouse.value.set(m.x, m.y, 0);
+      materialRef.current.uniforms.uMouseN.value.set(m.nx, m.ny);
     }
   });
 
   const uniforms = useMemo(() => ({
     uDrop: { value: 0 },
     uTime: { value: 0 },
-    uSize: { value: typeof window !== 'undefined' && window.innerWidth < 768 ? 3.5 : 4.5 },
+    uSize: { value: typeof window !== 'undefined' && window.innerWidth < 768 ? 3.0 : 3.6 },
     uIsDark: { value: isDark ? 1.0 : 0.0 },
     uMouse: { value: new THREE.Vector3(-9999, -9999, 0) },
+    uMouseN: { value: new THREE.Vector2(0, 0) },
   }), []);
 
   if (!geo) return null;
