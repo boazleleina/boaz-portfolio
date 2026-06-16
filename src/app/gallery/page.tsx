@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, X, ZoomIn, Droplets } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, Droplets, ExternalLink } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
 interface GalleryItem {
@@ -175,6 +175,26 @@ export default function GalleryPage() {
             <p className="text-sm text-slate-500">No photos found in this category.</p>
           </div>
         )}
+
+        {/* Samburu Project link */}
+        <div className="mt-16 p-8 rounded-2xl bg-blue-50/60 border border-blue-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="max-w-xl">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mb-1.5">
+              The Samburu Project
+            </h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Learn more about the organization bringing clean water and lasting impact to the Samburu community.
+            </p>
+          </div>
+          <a
+            href="https://thesamburuproject.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 shrink-0 px-5 py-3 rounded-full bg-black text-white text-[11px] font-bold tracking-wider uppercase hover:bg-slate-800 transition-all"
+          >
+            Visit Site <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </main>
 
       {/* ── LIGHTBOX MODAL ───────────────────────────────────────────────── */}
