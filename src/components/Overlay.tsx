@@ -237,9 +237,7 @@ export default function Overlay() {
 
           <p className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase mb-4 md:mb-8
             text-slate-500 leading-relaxed">
-            <span className="text-slate-800 sm:text-slate-500">Backend Engineer</span>
-            <span className="hidden sm:inline"> — </span>
-            <span className="text-slate-500"> Seattle, WA</span>
+            <span className="text-slate-800 sm:text-slate-500">Backend & Cloud Engineer</span>
           </p>
 
           {/* Typewriter title */}
@@ -295,9 +293,7 @@ export default function Overlay() {
                 <div>
                   <span className="text-purple-400">const</span> <span className="text-blue-400">roles</span> = [<span className="text-emerald-300">&quot;Backend&quot;</span>, <span className="text-emerald-300">&quot;Systems&quot;</span>, <span className="text-emerald-300">&quot;AI&quot;</span>];
                 </div>
-                <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">location</span> = <span className="text-emerald-300">&quot;Seattle, WA&quot;</span>;
-                </div>
+
                 <div>
                   <span className="text-purple-400">const</span> <span className="text-blue-400">remote</span> = <span className="text-emerald-300">true</span>;
                 </div>
@@ -423,12 +419,6 @@ export default function Overlay() {
                   period: 'Jan 2023 – Dec 2023',
                   desc: 'Built an LLM-powered business recommendation system and a document-grounded Q&A assistant using Django and the OpenAI API. Developed a browser-based real-time video conferencing service using WebSockets.',
                 },
-                {
-                  role: 'Keynote Speaker & STEM Mentor',
-                  company: 'The Samburu Project & STEM Programs',
-                  period: '2020 – 2025',
-                  desc: 'Delivered keynotes in Los Angeles, contributing to over $340k raised for clean water and education in Samburu, Kenya. Mentored high school students in Mathematics, Chemistry, and Computer Studies.',
-                },
               ].map(({ role, company, period, desc }, i) => (
                 <TimelineItem key={i}>
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-3">
@@ -480,6 +470,49 @@ export default function Overlay() {
             </div>
           </div>
         </section>
+
+        {/* ── COMMUNITY & IMPACT ───────────────────────────────────────────── */}
+        <section id="impact" className="py-10 md:py-14 lg:py-20 relative z-10">
+          <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16">
+            <div className="r pl-8 md:pl-0">
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
+                05 — Community & Impact
+              </p>
+            </div>
+            <div className="space-y-0">
+              {[
+                {
+                  role: 'Keynote Speaker',
+                  company: 'The Samburu Project',
+                  period: '2020 – 2025',
+                  desc: 'Delivered keynotes in Los Angeles, contributing to over $340k raised for clean water and education in Samburu, Kenya.',
+                },
+                {
+                  role: 'STEM Mentor',
+                  company: 'STEM Programs',
+                  period: '2020 – 2025',
+                  desc: 'Mentored high school students in Mathematics, Chemistry, and Computer Studies, creating equal access to quality education.',
+                },
+              ].map(({ role, company, period, desc }, i) => (
+                <TimelineItem key={i}>
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-3">
+                    <div>
+                      <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 leading-snug">{role}</h3>
+                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
+                        <span>{company}</span>
+                      </div>
+                    </div>
+                    <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 mt-1 sm:mt-0 shrink-0">{period}</span>
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed max-w-xl">{desc}</p>
+                </TimelineItem>
+              ))}
+              <Link href="/gallery" className="group inline-flex items-center gap-1.5 text-[11px] md:text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors mt-6 ml-8 md:ml-0">
+                View impact gallery <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* ── CONTACT ──────────────────────────────────────────────────────── */}
@@ -487,7 +520,7 @@ export default function Overlay() {
         <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-5 md:gap-10 lg:gap-16 items-start md:items-end">
           <div className="r mb-2 md:mb-0">
             <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400">
-              05 — Contact
+              06 — Contact
             </p>
           </div>
           <div className="r">
@@ -496,7 +529,7 @@ export default function Overlay() {
             </h2>
             <p className="text-sm text-slate-600 max-w-sm leading-relaxed mb-8 md:mb-10">
               Open to senior systems engineering, backend developer, and remote backend software roles.
-              Based in Seattle, WA — available for remote and hybrid positions.
+              Available for remote and hybrid positions.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
               <a href="mailto:boazleleina3@gmail.com"

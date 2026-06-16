@@ -2,7 +2,7 @@
 
 A personal portfolio site for a distributed-systems & backend engineer. Built as a fully static [Next.js 14](https://nextjs.org/) export with a 3D particle hero, animated transitions, a markdown-driven blog, a project showcase, and an image gallery.
 
-> **Distributed systems · ML pipelines · clean backend architecture** — Seattle, WA.
+> **Distributed systems · ML pipelines · clean backend architecture**
 
 <p align="center">
   <img src="docs/screenshots/home.png" alt="Home page with 3D particle hero" width="100%" />

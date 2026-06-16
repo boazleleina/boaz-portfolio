@@ -73,6 +73,9 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
             <video
               src={project.video}
               controls
+              autoPlay
+              loop
+              muted
               playsInline
               className="w-full h-full object-contain bg-black"
             />

@@ -4,7 +4,7 @@ import ScrollToTop from '@/components/ScrollToTop';
 
 export const metadata: Metadata = {
   title: 'Boaz Leleina - Distributed Systems & Backend Engineer',
-  description: 'Distributed systems and backend engineering. Based in Seattle, WA. Available for remote roles.',
+  description: 'Distributed systems and backend engineering. Available for remote roles.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
