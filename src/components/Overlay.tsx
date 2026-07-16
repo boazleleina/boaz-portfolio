@@ -263,7 +263,7 @@ export default function Overlay() {
                   bg-black text-white hover:bg-slate-800 transition-all text-center w-full sm:w-auto shadow-md">
                 View work
               </a>
-              <a href="/boaz-leleina-resume.pdf" download
+              <a href="/Leleina_Boaz_Resume.pdf" download
                 className="text-[10px] md:text-[11px] font-bold tracking-wider uppercase px-5 py-3 md:py-2.5 rounded-full
                   bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto shadow-sm">
                 Resume <Download className="w-3.5 h-3.5" />
@@ -286,7 +286,7 @@ export default function Overlay() {
               </div>
               
               <div className="text-[11px] space-y-1.5 leading-relaxed">
-                <div className="text-slate-500 text-[10px]">// Parsing boaz-leleina-cv.pdf</div>
+                <div className="text-slate-500 text-[10px]">// Parsing Leleina_Boaz_Resume.pdf</div>
                 <div>
                   <span className="text-purple-400">const</span> <span className="text-blue-400">status</span> = <span className="text-emerald-300">&quot;Open to Work&quot;</span>;
                 </div>
@@ -364,10 +364,10 @@ export default function Overlay() {
                       <span>William Jessup University</span>
                     </div>
                   </div>
-                  <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 mt-1 sm:mt-0 shrink-0">Sep 2024 – Aug 2026</span>
+                  <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 mt-1 sm:mt-0 shrink-0">Sep 2024 – Aug 2026 (expected)</span>
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed max-w-xl">
-                  Advanced studies in systems programming, machine learning, and distributed systems. Academic GPA: 4.0.
+                  Systems programming, machine learning, and distributed systems. GPA: 4.0.
                 </p>
               </TimelineItem>
 
@@ -384,7 +384,7 @@ export default function Overlay() {
                   <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 mt-1 sm:mt-0 shrink-0">Apr 2018 – Dec 2022</span>
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed max-w-xl">
-                  Focus on software engineering methodologies, database design, and algorithmic problem solving. Academic GPA: 3.6.
+                  Software engineering, database design, and algorithmic problem solving. GPA: 3.6.
                 </p>
               </TimelineItem>
             </div>
@@ -405,19 +405,19 @@ export default function Overlay() {
                   role: 'Graduate Researcher (Systems & AI)',
                   company: 'William Jessup University, California',
                   period: '2024 – Present',
-                  desc: 'Relocated to California for MS in Computer Science (GPA 4.0). Building intelligent software agents, machine learning pipelines, and robust distributed architectures.',
+                  desc: 'Designed and built an MCP server integrating AutoML with Google Gemini and Telegram for automated CSV analysis, classification, and metric reporting. Research focus on intelligent software agents and distributed architectures.',
                 },
                 {
                   role: 'Software Engineer',
                   company: 'Appstec America (Remote)',
                   period: 'Jan 2024 – Sep 2024',
-                  desc: 'Optimized Django backend APIs and React frontend components for an EdTech platform. Reduced p95 latency by 40% (520ms to 310ms) via PostgreSQL index tuning and query optimization. Improved Stripe webhook handling.',
+                  desc: 'Optimized Django APIs and React components for an EdTech platform. Cut p95 latency by 40% (520ms → 310ms) through PostgreSQL index tuning and query optimization. Improved Stripe webhook reliability and error handling.',
                 },
                 {
                   role: 'Backend Engineer (Contract)',
                   company: 'Gre8 Intelligence (Remote)',
                   period: 'Jan 2023 – Dec 2023',
-                  desc: 'Built an LLM-powered business recommendation system and a document-grounded Q&A assistant using Django and the OpenAI API. Developed a browser-based real-time video conferencing service using WebSockets.',
+                  desc: 'Built an LLM-powered onboarding and recommendation system serving ~100 users across pilot clients. Developed a document-grounded Q&A assistant using Django and the OpenAI API. Shipped a browser-based real-time video conferencing service over WebSockets.',
                 },
               ].map(({ role, company, period, desc }, i) => (
                 <TimelineItem key={i}>
@@ -489,9 +489,9 @@ export default function Overlay() {
                 },
                 {
                   role: 'STEM Mentor',
-                  company: 'STEM Programs',
-                  period: '2020 – 2025',
-                  desc: 'Mentored high school students in Mathematics, Chemistry, and Computer Studies, creating equal access to quality education.',
+                  company: 'Samburu High School, Kenya',
+                  period: '2020 – 2022',
+                  desc: 'Mentored high school students in Mathematics, Sciences, and Computer Studies.',
                 },
               ].map(({ role, company, period, desc }, i) => (
                 <TimelineItem key={i}>
@@ -528,15 +528,15 @@ export default function Overlay() {
               Let's build<br className="hidden md:block" /> something real.
             </h2>
             <p className="text-sm text-slate-600 max-w-sm leading-relaxed mb-8 md:mb-10">
-              Open to senior systems engineering, backend developer, and remote backend software roles.
-              Available for remote and hybrid positions.
+              Open to backend, platform, and AI/ML engineering roles — full-time, contract, or internship.
+              Based in Seattle, WA — open to relocation, hybrid, or remote.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
               <a href="mailto:boazleleina3@gmail.com"
                 className="flex items-center justify-center gap-2 text-[11px] md:text-sm font-bold px-6 py-4 md:py-3.5 rounded-full bg-black text-white hover:bg-slate-800 transition-all w-full sm:w-auto text-center shadow-md">
                 boazleleina3@gmail.com <ArrowUpRight className="w-4 h-4" />
               </a>
-              <a href="/boaz-leleina-resume.pdf" download
+              <a href="/Leleina_Boaz_Resume.pdf" download
                 className="flex items-center justify-center gap-2 text-[11px] md:text-sm font-bold px-6 py-4 md:py-3.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all w-full sm:w-auto text-center shadow-sm">
                 Download Resume <Download className="w-4 h-4" />
               </a>

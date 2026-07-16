@@ -42,14 +42,16 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
           <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             {project.title}
           </h1>
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noreferrer"
-            className="shrink-0 mt-1.5 inline-flex items-center gap-2 text-[11px] md:text-xs font-bold tracking-wider uppercase px-4 md:px-5 py-2.5 rounded-full bg-black text-white hover:bg-slate-800 transition-all duration-200 shadow-md"
-          >
-            <Github className="w-4 h-4" /> <span className="hidden sm:inline">GitHub</span>
-          </a>
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 mt-1.5 inline-flex items-center gap-2 text-[11px] md:text-xs font-bold tracking-wider uppercase px-4 md:px-5 py-2.5 rounded-full bg-black text-white hover:bg-slate-800 transition-all duration-200 shadow-md"
+            >
+              <Github className="w-4 h-4" /> <span className="hidden sm:inline">GitHub</span>
+            </a>
+          )}
         </div>
         <p className="text-base text-slate-600 leading-relaxed mb-6 max-w-2xl">
           {project.desc}
@@ -114,14 +116,16 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
         </section>
 
         {/* ── GITHUB CTA ─────────────────────────────────────────────────── */}
-        <a
-          href={project.github}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-bold px-6 py-3.5 rounded-full bg-black text-white hover:bg-slate-800 transition-all shadow-md"
-        >
-          <Github className="w-4 h-4" /> View on GitHub
-        </a>
+        {project.github && (
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-bold px-6 py-3.5 rounded-full bg-black text-white hover:bg-slate-800 transition-all shadow-md"
+          >
+            <Github className="w-4 h-4" /> View on GitHub
+          </a>
+        )}
       </main>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
