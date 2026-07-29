@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!--
+    Favicon: Maasai shield with crossed spears. Picked up automatically by
+    Next.js via the app/icon file convention.
+
+    Tuned for 16-32px, verified by rasterizing at both:
+      - No background plate. The shield-and-spears silhouette is the mark, and
+        a plate only shrinks it. Transparent also means it sits correctly on
+        light and dark browser chrome.
+      - Spear shafts are ~4x the thickness of the full artwork's. At tab size
+        a realistic shaft lands under a pixel and reads as grey fuzz around
+        the shield rather than as a spear.
+      - Spearheads are chunky triangles pushed to the corners, where they have
+        clear space. Detail inside the head is dropped; only the outline reads.
+      - Beadwork survives as four solid discs (white, yellow, green, blue) in
+        the central band, not as the dashed bead strands of the full artwork,
+        which alias into a smear. Four is the most that stay separable at 32px.
+      - The band is edged in off-white so it separates from the red field
+        instead of muddying into it when downsampled.
+
+    Full detailed artwork lives at /public/logo-shield.svg for large renders.
+  -->
+
+  <!-- Crossed spear shafts -->
+  <g stroke="#2b2e34" stroke-width="78" stroke-linecap="round">
+    <path d="M150 150 L874 874" />
+    <path d="M874 150 L150 874" />
+  </g>
+
+  <!-- Spearheads -->
+  <g fill="#d9dde2" stroke="#2b2e34" stroke-width="16">
+    <path d="M96 96 L272 148 L148 272 Z" />
+    <path d="M928 96 L876 272 L752 148 Z" />
+  </g>
+
+  <!-- Shield: dark rim over red field -->
+  <g transform="translate(512 512) scale(1.46 1.30) translate(-512 -520)">
+    <path d="M512 112 C640 188 744 316 744 494 C744 690 648 836 512 928 C376 836 280 690 280 494 C280 316 384 188 512 112 Z"
+          fill="#2b2e34" />
+    <path d="M512 145 C622 214 706 334 706 494 C706 659 629 790 512 876 C395 790 318 659 318 494 C318 334 402 214 512 145 Z"
+          fill="#e50914" />
+  </g>
+
+  <!-- Central band with beadwork -->
+  <rect x="238" y="416" width="548" height="192" fill="#1b1d21" />
+  <rect x="238" y="416" width="548" height="26" fill="#f2f2f0" />
+  <rect x="238" y="582" width="548" height="26" fill="#f2f2f0" />
+  <g>
+    <circle cx="352" cy="512" r="44" fill="#ffffff" />
+    <circle cx="458" cy="512" r="44" fill="#ffd11a" />
+    <circle cx="564" cy="512" r="44" fill="#138a45" />
+    <circle cx="670" cy="512" r="44" fill="#1f6feb" />
+  </g>
+</svg>

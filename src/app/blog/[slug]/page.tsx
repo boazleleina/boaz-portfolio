@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
 import { ArrowLeft, Clock, Tag } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import ZoomableImage from '@/components/ZoomableImage';
 import { getAllPosts, getPost } from '@/lib/blog';
 import 'highlight.js/styles/github-dark.css';
 
@@ -28,7 +30,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-500 selection:text-white">
       <Navbar />
 
-      <main className="max-w-2xl mx-auto px-6 md:px-12 pt-32 pb-24">
+      <main className="max-w-3xl mx-auto px-6 md:px-12 pt-32 pb-24">
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-black mb-8 transition-colors"
@@ -48,14 +50,26 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
         <p className="text-xs font-mono text-slate-400 mb-10">{post.date}</p>
 
-        <article className="prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-h3:text-xl prose-a:text-blue-600 prose-pre:bg-slate-900 prose-pre:rounded-xl prose-code:font-mono prose-img:rounded-xl">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+        <article className="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-h3:text-xl prose-a:text-blue-600 prose-pre:bg-slate-900 prose-pre:rounded-xl prose-code:font-mono prose-img:rounded-xl">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw, rehypeHighlight]}
+            components={{
+              img: ({ src, alt }) => (
+                <ZoomableImage src={typeof src === 'string' ? src : ''} alt={alt} />
+              ),
+              // `node` is react-markdown's AST handle — drop it so it doesn't hit the DOM.
+              video: ({ node, ...props }) => (
+                <video {...props} controls className="w-full rounded-xl border border-slate-200" />
+              ),
+            }}
+          >
             {post.content}
           </ReactMarkdown>
         </article>
       </main>
 
-      <footer className="px-6 md:px-12 py-8 max-w-2xl mx-auto flex items-center justify-between">
+      <footer className="px-6 md:px-12 py-8 max-w-3xl mx-auto flex items-center justify-between">
         <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
           © {new Date().getFullYear()} Boaz Leleina
         </span>
