@@ -5,22 +5,46 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, PlayCircle } from 'lucide-react';
 import Navbar from './Navbar';
 import { PROJECTS } from '@/data/projects';
+import {
+  AVAILABILITY,
+  CAPABILITY,
+  HERO_BIO,
+  EMAIL,
+  HUMAN_LINE,
+  LOCATION,
+  PRIMARY_ROLES,
+  SOCIALS,
+  TARGET_TEAMS,
+  TITLE,
+} from '@/data/profile';
+
+const MAILTO = `mailto:${EMAIL}?subject=${encodeURIComponent('Role opportunity')}`;
 
 // Three.js particle canvas — client only (uses WebGL/window).
 const Experience = dynamic(() => import('./Experience'), { ssr: false });
 
-gsap.registerPlugin(ScrollTrigger);
+// Registered on the client only: this component is server-rendered now, and
+// ScrollTrigger touches window/document at registration time.
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 // ── Typewriter hook (loops forever) ─────────────────────────────────────────
-function useTypewriter(lines: string[], speed = 60, linePause = 400) {
-  const [display, setDisplay] = useState<string[]>(Array(lines.length).fill(''));
-  const [currentLine, setCurrentLine] = useState(0);
-  const [done, setDone] = useState(false);
+function useTypewriter(lines: string[], speed = 14, linePause = 60) {
+  // Seeded with the finished text so the h1 is fully rendered in the static
+  // HTML, and so the first paint is never an empty headline with a cursor.
+  const [display, setDisplay] = useState<string[]>(lines);
+  const [currentLine, setCurrentLine] = useState(lines.length - 1);
+  const [done, setDone] = useState(true);
 
   useEffect(() => {
+    // Anyone who asked for less motion keeps the finished text, no animation.
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+
     let lineIdx = 0;
     let charIdx = 0;
     let timer: ReturnType<typeof setTimeout>;
@@ -60,7 +84,15 @@ function useTypewriter(lines: string[], speed = 60, linePause = 400) {
       }
     }
 
-    const start = setTimeout(type, 600);
+    // Whole run is well under a second: ~40 characters at 18ms plus three
+    // short line pauses. The previous 60ms/400ms pacing left the largest
+    // block on the page empty for seconds on a cold load, which read as a
+    // broken page rather than as an effect.
+    setDisplay(Array(lines.length).fill(''));
+    setDone(false);
+    setCurrentLine(0);
+    const start = setTimeout(type, 40);
+
     return () => {
       active = false;
       clearTimeout(start);
@@ -84,6 +116,10 @@ function TimelineLine() {
       start: 'top 55%',
       end: 'bottom 55%',
       scrub: true,
+      // Without this the line keeps the offsets it measured before the demo
+      // thumbnails loaded, so the progress fill (and its glowing dot) stops
+      // partway down instead of tracking the scroll.
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         if (progressRef.current) {
           progressRef.current.style.height = `${self.progress * 100}%`;
@@ -124,6 +160,7 @@ function TimelineItem({ children }: { children: React.ReactNode }) {
       trigger: itemRef.current,
       start: 'top 55%',
       end: 'bottom 55%',
+      invalidateOnRefresh: true,
       onToggle: (self) => {
         setIsActive(self.isActive);
       },
@@ -154,7 +191,7 @@ export default function Overlay() {
   const heroImgRef = useRef<HTMLImageElement>(null);
   const heroCanvasRef = useRef<HTMLDivElement>(null);
 
-  const { display, currentLine, done } = useTypewriter(['Clean APIs.', 'ML Pipelines.', 'Solid Systems.']);
+  const { display, currentLine, done } = useTypewriter(['Clean APIs.', 'Safe automation.', 'Solid systems.']);
 
   useEffect(() => {
     setMounted(true);
@@ -183,7 +220,30 @@ export default function Overlay() {
       },
     });
 
+    // Thumbnails and the portrait decode after triggers are first measured,
+    // which shifts everything below them and would otherwise freeze the
+    // timeline progress line partway down. One re-measure once loading settles.
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener('load', refresh);
+    const settle = setTimeout(refresh, 600);
+
+    // The markup is server-rendered now, so these elements are on screen
+    // before GSAP hides them to animate them in. If a trigger never fires,
+    // the old client-only build simply showed nothing yet — this one would
+    // leave real content permanently invisible. Force anything still at
+    // opacity 0 back into view.
+    const failsafe = setTimeout(() => {
+      gsap.utils.toArray<HTMLElement>('.r').forEach((el) => {
+        if (window.getComputedStyle(el).opacity === '0') {
+          gsap.set(el, { opacity: 1, y: 0 });
+        }
+      });
+    }, 2500);
+
     return () => {
+      window.removeEventListener('load', refresh);
+      clearTimeout(settle);
+      clearTimeout(failsafe);
       fade.kill();
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
@@ -201,7 +261,7 @@ export default function Overlay() {
         <div className="sm:hidden relative w-full overflow-hidden" style={{ marginTop: '56px', height: '320px' }}>
           <img
             src="/boaz-portrait-light.png"
-            alt="Boaz Leleina"
+            alt="Portrait of Boaz Leleina, backend and platform engineer"
             className="w-full h-full object-cover"
             style={{ objectPosition: 'center 18%', filter: 'brightness(1.24) contrast(1.22)' }}
           />
@@ -218,7 +278,7 @@ export default function Overlay() {
           <img
             ref={heroImgRef}
             src="/boaz-portrait-light.png"
-            alt="Boaz Leleina"
+            alt="Portrait of Boaz Leleina, backend and platform engineer"
             className="absolute inset-0 w-full h-full object-cover"
             style={{
               objectPosition: 'center 10%',
@@ -237,7 +297,7 @@ export default function Overlay() {
 
           <p className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase mb-4 md:mb-8
             text-slate-500 leading-relaxed">
-            <span className="text-slate-800 sm:text-slate-500">Backend & Cloud Engineer</span>
+            <span className="text-slate-800 sm:text-slate-500">{TITLE} · Python · AWS · LLM systems</span>
           </p>
 
           {/* Typewriter title */}
@@ -255,7 +315,7 @@ export default function Overlay() {
 
           <div className="flex flex-col gap-5 w-full sm:w-auto sm:pt-2 md:pt-4 lg:pt-8">
             <p className="text-xs md:text-sm text-slate-600 max-w-xs leading-relaxed">
-              I leverage distributed systems, machine learning, and clean API architectures to solve real-world data and infrastructure challenges.
+              {HERO_BIO}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <a href="#work"
@@ -268,7 +328,7 @@ export default function Overlay() {
                   bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto shadow-sm">
                 Resume <Download className="w-3.5 h-3.5" />
               </a>
-              <a href="mailto:boazleleina3@gmail.com"
+              <a href={MAILTO}
                 className="text-[10px] md:text-[11px] font-bold tracking-wider uppercase px-5 py-3 md:py-2.5 rounded-full
                   bg-slate-100 hover:bg-slate-200 transition-all text-center w-full sm:w-auto">
                 Email
@@ -288,17 +348,19 @@ export default function Overlay() {
               <div className="text-[11px] space-y-1.5 leading-relaxed">
                 <div className="text-slate-500 text-[10px]">// Parsing Leleina_Boaz_Resume.pdf</div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">status</span> = <span className="text-emerald-300">&quot;Open to Work&quot;</span>;
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">status</span> = <span className="text-emerald-300">&quot;{AVAILABILITY.short}&quot;</span>;
                 </div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">roles</span> = [<span className="text-emerald-300">&quot;Backend&quot;</span>, <span className="text-emerald-300">&quot;Systems&quot;</span>, <span className="text-emerald-300">&quot;AI&quot;</span>];
-                </div>
-
-                <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">remote</span> = <span className="text-emerald-300">true</span>;
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">graduates</span> = <span className="text-emerald-300">&quot;MS CS, {AVAILABILITY.graduation}&quot;</span>;
                 </div>
                 <div>
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">workAuth</span> = <span className="text-emerald-300">&quot;US Authorized&quot;</span>;
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">teams</span> = [<span className="text-emerald-300">&quot;Backend&quot;</span>, <span className="text-emerald-300">&quot;API&quot;</span>, <span className="text-emerald-300">&quot;Platform&quot;</span>, <span className="text-emerald-300">&quot;DevTools&quot;</span>, <span className="text-emerald-300">&quot;FinOps&quot;</span>, <span className="text-emerald-300">&quot;AI Infra&quot;</span>];
+                </div>
+                <div>
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">base</span> = <span className="text-emerald-300">&quot;United States&quot;</span>;
+                </div>
+                <div>
+                  <span className="text-purple-400">const</span> <span className="text-blue-400">workAuth</span> = <span className="text-emerald-300">&quot;{AVAILABILITY.workAuth}&quot;</span>;
                   <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-1.5 align-middle animate-pulse" />
                 </div>
               </div>
@@ -311,14 +373,15 @@ export default function Overlay() {
       <section id="about" className="py-12 md:py-24 lg:py-40 px-6 md:px-10 lg:px-12 max-w-[1400px] mx-auto">
         <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16 items-start">
           <div className="r">
-            <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400
-              md:sticky md:top-24">01 — About</p>
+            <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400
+              md:sticky md:top-24">01 — About</h2>
           </div>
           <div>
-            <p className="r text-2xl md:text-3xl font-light leading-relaxed text-slate-800 mb-7 md:mb-14 tracking-tight">
-              From Samburu, Kenya to Silicon Valley. I build data pipelines,
-              intelligent software agents, and machine learning models
-              engineered to solve environmental and resource challenges at scale.
+            <p className="r text-2xl md:text-3xl font-light leading-relaxed text-slate-800 mb-4 md:mb-6 tracking-tight">
+              {CAPABILITY}
+            </p>
+            <p className="r text-base md:text-lg font-light leading-relaxed text-slate-500 mb-7 md:mb-14">
+              {HUMAN_LINE}
             </p>
             <div className="grid md:grid-cols-2 gap-x-16 gap-y-7">
               {[
@@ -349,9 +412,9 @@ export default function Overlay() {
         <section id="education" className="py-10 md:py-14 lg:py-20 relative z-10">
           <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16">
             <div className="r pl-8 md:pl-0">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
+              <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 02 — Education
-              </p>
+              </h2>
             </div>
             <div className="space-y-0">
               <TimelineItem>
@@ -364,10 +427,10 @@ export default function Overlay() {
                       <span>William Jessup University</span>
                     </div>
                   </div>
-                  <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 mt-1 sm:mt-0 shrink-0">Sep 2024 – Aug 2026 (expected)</span>
+                  <span className="font-mono text-[10px] sm:text-[11px] text-slate-400 mt-1 sm:mt-0 shrink-0">Sep 2024 – Aug 2026</span>
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed max-w-xl">
-                  Systems programming, machine learning, and distributed systems. GPA: 4.0.
+                  Systems programming, machine learning, and software architecture. GPA: 4.0.
                 </p>
               </TimelineItem>
 
@@ -395,15 +458,15 @@ export default function Overlay() {
         <section id="experience" className="py-10 md:py-14 lg:py-20 relative z-10">
           <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16">
             <div className="r pl-8 md:pl-0">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
+              <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 03 — Experience
-              </p>
+              </h2>
             </div>
             <div className="space-y-0">
               {[
                 {
                   role: 'Graduate Researcher (Systems & AI)',
-                  company: 'William Jessup University, California',
+                  company: 'William Jessup University',
                   period: '2024 – Present',
                   desc: 'Designed and built an MCP server integrating AutoML with Google Gemini and Telegram for automated CSV analysis, classification, and metric reporting. Research focus on intelligent software agents and distributed architectures.',
                 },
@@ -441,12 +504,12 @@ export default function Overlay() {
         <section id="work" className="py-10 md:py-14 lg:py-20 relative z-10">
           <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16 mb-0">
             <div className="r pl-8 md:pl-0">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
+              <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 04 — Projects
-              </p>
+              </h2>
             </div>
             <div className="space-y-0">
-              {PROJECTS.map(({ slug, no, title, tags, desc }) => (
+              {PROJECTS.map(({ slug, no, title, tags, desc, poster, videoLength, date, status }) => (
                 <TimelineItem key={slug}>
                   <Link href={`/projects/${slug}`} className="group flex gap-4 sm:gap-8 transition-colors" aria-label={`View ${title} demo`}>
                     <span className="font-mono text-[11px] font-bold text-blue-400 mt-1 shrink-0 tracking-widest">{no}</span>
@@ -455,7 +518,39 @@ export default function Overlay() {
                         <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">{title}</h3>
                         <ArrowUpRight className="w-4 h-4 shrink-0 mt-0.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
                       </div>
-                      <p className="text-sm text-slate-600 leading-relaxed mb-4 max-w-lg">{desc}</p>
+
+                      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        {/* Poster thumbnail: signals that a demo exists at all. */}
+                        {poster && (
+                          <div className="relative shrink-0 w-full sm:w-44 aspect-video overflow-hidden rounded-lg border border-slate-200 bg-slate-950">
+                            <img
+                              src={poster}
+                              alt={`Still frame from the ${title} demo`}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                            />
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/85 shadow-md transition-transform group-hover:scale-110">
+                                <PlayCircle className="h-4 w-4 text-slate-900" />
+                              </span>
+                            </span>
+                            {videoLength && (
+                              <span className="absolute bottom-1.5 right-1.5 rounded bg-black/75 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-white">
+                                {videoLength}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-600 leading-relaxed max-w-lg">{desc}</p>
+                          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                            {date} · {status}
+                          </p>
+                        </div>
+                      </div>
+
                       <div className="flex flex-wrap gap-2">
                         {tags.map(t => (
                           <span key={t} className="font-mono text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 sm:px-2.5 sm:py-1 bg-slate-100 text-slate-600 rounded">
@@ -475,9 +570,9 @@ export default function Overlay() {
         <section id="impact" className="py-10 md:py-14 lg:py-20 relative z-10">
           <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-6 md:gap-10 lg:gap-16">
             <div className="r pl-8 md:pl-0">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
+              <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 md:sticky md:top-24">
                 05 — Community & Impact
-              </p>
+              </h2>
             </div>
             <div className="space-y-0">
               {[
@@ -519,33 +614,36 @@ export default function Overlay() {
       <section id="contact" className="py-12 md:py-24 lg:py-40 px-6 md:px-10 lg:px-12 max-w-[1400px] mx-auto">
         <div className="grid md:grid-cols-[150px_1fr] lg:grid-cols-[180px_1fr] gap-5 md:gap-10 lg:gap-16 items-start md:items-end">
           <div className="r mb-2 md:mb-0">
-            <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400">
+            <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400">
               06 — Contact
-            </p>
+            </h2>
           </div>
           <div className="r">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-[1] md:leading-[0.9] text-slate-900 mb-6 md:mb-10">
+            <h3 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-[1] md:leading-[0.9] text-slate-900 mb-6 md:mb-10">
               Let's build<br className="hidden md:block" /> something real.
-            </h2>
+            </h3>
+            <p className="text-sm text-slate-600 max-w-sm leading-relaxed mb-3">
+              {AVAILABILITY.full}. Based in {LOCATION.label}, open to relocation.
+            </p>
             <p className="text-sm text-slate-600 max-w-sm leading-relaxed mb-8 md:mb-10">
-              Open to backend, platform, and AI/ML engineering roles — full-time, contract, or internship.
-              Based in Seattle, WA — open to relocation, hybrid, or remote.
+              Open to {PRIMARY_ROLES}. Also a strong fit for {TARGET_TEAMS.slice(0, -1).join(', ')},
+              and {TARGET_TEAMS[TARGET_TEAMS.length - 1]} teams.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-              <a href="mailto:boazleleina3@gmail.com"
+              <a href={MAILTO}
                 className="flex items-center justify-center gap-2 text-[11px] md:text-sm font-bold px-6 py-4 md:py-3.5 rounded-full bg-black text-white hover:bg-slate-800 transition-all w-full sm:w-auto text-center shadow-md">
-                boazleleina3@gmail.com <ArrowUpRight className="w-4 h-4" />
+                {EMAIL} <ArrowUpRight className="w-4 h-4" />
               </a>
               <a href="/Leleina_Boaz_Resume.pdf" download
                 className="flex items-center justify-center gap-2 text-[11px] md:text-sm font-bold px-6 py-4 md:py-3.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all w-full sm:w-auto text-center shadow-sm">
                 Download Resume <Download className="w-4 h-4" />
               </a>
               <div className="flex gap-3 w-full sm:w-auto">
-                <a href="https://github.com/boazleleina" target="_blank" rel="noreferrer"
+                <a href={SOCIALS.find((s) => s.name === 'GitHub')?.url ?? '#'} target="_blank" rel="noreferrer"
                   className="flex-1 text-[11px] md:text-sm font-bold px-6 py-4 md:py-3.5 rounded-full bg-slate-100 hover:bg-black hover:text-white transition-all text-center">
                   GitHub
                 </a>
-                <a href="https://linkedin.com/in/boaz-leleina" target="_blank" rel="noreferrer"
+                <a href={SOCIALS.find((s) => s.name === 'LinkedIn')?.url ?? '#'} target="_blank" rel="noreferrer"
                   className="flex-1 text-[11px] md:text-sm font-bold px-6 py-4 md:py-3.5 rounded-full bg-slate-100 hover:bg-black hover:text-white transition-all text-center">
                   LinkedIn
                 </a>
@@ -559,9 +657,6 @@ export default function Overlay() {
       <footer className="px-6 md:px-10 lg:px-12 py-8 max-w-[1400px] mx-auto flex items-center justify-between">
         <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
           © {new Date().getFullYear()} Boaz Leleina
-        </span>
-        <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
-          Built from systems.
         </span>
       </footer>
 

@@ -1,3 +1,10 @@
+export interface ProjectMetric {
+  /** The number itself. Keep it short: it is set in a large display face. */
+  value: string;
+  /** What the number counts. */
+  label: string;
+}
+
 export interface Project {
   slug: string;
   no: string;
@@ -9,8 +16,35 @@ export interface Project {
   overview: string[];
   /** Why the project matters / the problem it solves. */
   importance: string[];
-  /** Path to a demo video in /public (e.g. /demos/resume-agent.mp4). Omit until recorded. */
+  /** Path to a demo video in /public. Omit until recorded. */
   video?: string;
+  /** Poster frame shown before playback and as the home-card thumbnail. */
+  poster?: string;
+  /** Human-readable demo length, e.g. "24s demo". */
+  videoLength?: string;
+  /** Build window, e.g. "Jul 2026". Taken from real repo history. */
+  date: string;
+  /** Maintenance status shown next to the date. */
+  status: string;
+  /**
+   * Scope and role, answering "did he actually build this". Describes what was
+   * owned, not how fast it was done: a duration invites "rushed" and the depth
+   * metrics answer the authorship question better than a stopwatch does.
+   */
+  scope: string;
+  /**
+   * Hard numbers. Every value must be checkable in the repo (test counts,
+   * coverage, rule counts, LOC) — never estimated or aspirational.
+   */
+  metrics: ProjectMetric[];
+  /**
+   * In-flight work, dated. Signals the project is a live line of work rather
+   * than a finished artifact, and names the skills being added before a
+   * reviewer notices they are missing from the stack list.
+   */
+  building?: { since: string; body: string };
+  /** Skimmable pipeline: what flows through the system, in order. */
+  architecture: { caption: string; nodes: { label: string; sub: string }[] };
   stack: string;
   /** Public repo URL. Omit until the repo is published — never link a 404. */
   github?: string;
@@ -23,6 +57,32 @@ export const PROJECTS: Project[] = [
     title: 'FinOps Sentinel',
     tags: ['Python', 'AWS', 'Hexagonal Architecture', 'Slack'],
     desc: 'An autonomous AWS cost agent that scans for wasted spend, prices it, explains it, and deletes it, but only after a human approves in Slack.',
+    date: 'Jul 2026',
+    status: 'Actively maintained',
+    scope: 'Solo build, domain design through deployment',
+    metrics: [
+      { value: '9', label: 'detection rules' },
+      { value: '8', label: 'scanners per region' },
+      { value: '96%', label: 'test coverage' },
+      { value: '294', label: 'tests' },
+      { value: '6.4k', label: 'lines of source' },
+      { value: '0', label: 'deletions without approval' },
+    ],
+    building: {
+      since: 'August 2026',
+      body: 'Currently packaging the agent for real deployment: Terraform modules for the IAM roles, scan schedule, and Slack webhook secrets, and a Kubernetes deployment splitting the scanner into a CronJob and the approval API into a long-running Deployment. The goal is an account owner running one apply instead of following a setup document.',
+    },
+    architecture: {
+      caption: 'Detection is automatic. Deletion requires a named human.',
+      nodes: [
+        { label: 'Scan', sub: 'boto3, per region' },
+        { label: 'Price', sub: 'monthly USD' },
+        { label: 'Explain', sub: 'local LLM' },
+        { label: 'Approve', sub: 'Slack Block Kit' },
+        { label: 'Snapshot', sub: 'recovery path' },
+        { label: 'Delete', sub: 'audited' },
+      ],
+    },
     overview: [
       'FinOps Sentinel is an event-driven AWS cost optimization agent. It scans accounts across regions for wasted spend, prices each finding in real monthly dollars, explains it in plain language, and remediates it, with a human approval step standing between detection and deletion.',
       'Nine detection rules cover the waste that accumulates quietly: unattached EBS volumes, orphaned Elastic IPs, long-stopped EC2 instances, expired snapshots, abandoned multipart uploads, plus advisory-only rules for idle instances, idle and stopped RDS databases, and S3 buckets with no lifecycle policy. Rules that can act do; rules that rely on inference stay advisory and never render an approve button.',
@@ -36,6 +96,8 @@ export const PROJECTS: Project[] = [
       'FinOps Sentinel takes the third path: automate the tedious 95%, and put a named human on the irreversible 5%. Every deletion is approved by a person, attributed to their Slack handle, preceded by a snapshot, and recorded with the evidence that justified it. That audit trail is a compliance artifact as much as an engineering one.',
     ],
     video: '/gallery/demo-videos/finops-sentinel.mp4',
+    poster: '/gallery/demo-posters/finops-sentinel.jpg',
+    videoLength: '24s demo',
     stack: 'Python 3.11+ · boto3 · SQLAlchemy · Alembic · FastAPI · Typer · Slack Block Kit · Ollama · pytest (96% coverage) · mypy strict · Ruff',
     github: 'https://github.com/boazleleina/finops-sentinel',
   },
@@ -45,6 +107,28 @@ export const PROJECTS: Project[] = [
     title: 'LLM Resume Agent',
     tags: ['Python', 'FastAPI', 'Ollama', 'LLM'],
     desc: 'A privacy-preserving resume review agent running fully locally on Ollama. It grades resume-to-job fit and proposes traceable edits, and is structurally prevented from inventing experience.',
+    date: 'Apr – Jul 2026',
+    status: 'Feature complete, v2 planned',
+    scope: 'Solo build, alongside coursework',
+    metrics: [
+      { value: '40', label: 'tests' },
+      { value: '3', label: 'matching layers' },
+      { value: '5', label: 'traceability tags' },
+      { value: '4', label: 'JD extraction layers' },
+      { value: '0', label: 'bytes leaving the machine' },
+      { value: '3.5k', label: 'lines of source' },
+    ],
+    architecture: {
+      caption: 'The model reads, judges, and reasons. Everything else is deterministic code that can overrule it.',
+      nodes: [
+        { label: 'Parse', sub: 'PDF / DOCX' },
+        { label: 'Extract', sub: 'canonical JSON' },
+        { label: 'Verify', sub: 'verbatim guard' },
+        { label: 'Match', sub: 'exact→fuzzy→LLM' },
+        { label: 'Grade', sub: 'local Qwen3' },
+        { label: 'Trace', sub: 'tagged edits' },
+      ],
+    },
     overview: [
       'The LLM Resume Agent ingests a resume and a target job description, grades the fit, and proposes phrasing-level edits. It runs entirely locally on Ollama, so a document containing a full name, phone number, home city, employment history, and sometimes visa status never leaves the machine.',
       'The defining constraint is that the agent may reorganize and rephrase what is there, and may not add anything that is not. That is enforced structurally rather than by prompt instruction: the resume is parsed into a canonical Pydantic model where fields are marked VERBATIM or MUTABLE, and a model validator checks every VERBATIM field against the immutable source text after the model has spoken. A hallucinated skill is stripped and logged before any later stage can see it.',
@@ -57,7 +141,9 @@ export const PROJECTS: Project[] = [
       'Ask a capable model to improve a resume and it will hand back a stronger candidate than the one who uploaded it: an invented metric here, a framework never touched there, all fluent and all a liability in an interview that can no longer be passed. A tool that quietly inflates your resume is not saving you work, it is creating a problem you will discover in the room.',
       'Keeping the model local solves the privacy half, and confining it to three narrow jobs solves the honesty half. Everything else, whether a file is safe, whether a term matches, whether a claim has evidence, is deterministic code that runs before or after the model and can overrule it.',
     ],
-    video: '/gallery/demo-videos/linkedin-video.mp4',
+    video: '/gallery/demo-videos/llm-resume-agent-demo.mp4',
+    poster: '/gallery/demo-posters/llm-resume-agent.jpg',
+    videoLength: '40s demo',
     stack: 'Python · FastAPI · Streamlit · Pydantic v2 · Ollama (Qwen3 30B-A3B) · pdfplumber · python-docx · trafilatura · BeautifulSoup · rapidfuzz · pytest',
     github: 'https://github.com/boazleleina/resume_agent',
   },
@@ -67,6 +153,28 @@ export const PROJECTS: Project[] = [
     title: 'Token Usage Tracker',
     tags: ['Python', 'OTLP', 'Observability', 'LLM'],
     desc: 'A local observability tool tracking LLM API spend across Claude Code, Gemini/Antigravity, and custom scripts, with a live dashboard and zero external dependencies.',
+    date: 'Jun 2026',
+    status: 'Stable, in daily use',
+    scope: 'Solo build, standard library only',
+    metrics: [
+      { value: '0', label: 'external dependencies' },
+      { value: '~5s', label: 'capture latency' },
+      { value: '3', label: 'telemetry sources' },
+      { value: '4', label: 'independent processes' },
+      { value: '1.2k', label: 'lines of source' },
+      { value: '3', label: 'token buckets priced' },
+    ],
+    architecture: {
+      caption: 'Four processes, one append-only file, no broker between them.',
+      nodes: [
+        { label: 'Claude Code', sub: 'OTLP push' },
+        { label: 'Antigravity', sub: 'local RPC' },
+        { label: 'Any script', sub: 'log_usage()' },
+        { label: 'JSON-lines log', sub: 'the contract' },
+        { label: 'Aggregate', sub: 'sessions, cache split' },
+        { label: 'Dashboard', sub: 'vanilla JS' },
+      ],
+    },
     overview: [
       'Token Usage Tracker answers a question that is surprisingly hard to answer otherwise: where did the tokens go? It captures spend in real time across Claude Code, Gemini via Antigravity, and any custom script, using nothing but the Python standard library.',
       'Claude Code usage arrives by push rather than poll. A local OTLP/HTTP receiver ingests the editor\'s native OpenTelemetry export, logging every prompt within about five seconds with no polling loop and no transcript scraping. The receiver always answers 200, deliberately, because an OTLP exporter treats a non-2xx as failure and starts backing off, and a telemetry sink should never apply backpressure to the workload it is measuring.',
@@ -79,27 +187,11 @@ export const PROJECTS: Project[] = [
       'Local telemetry gives immediate visibility into cost per session and per model without shipping prompt contents to a third-party service, which is the trade most observability vendors ask you to make silently.',
       'It is also a demonstration that good observability does not require a heavyweight stack. A push receiver, a cost model that respects caching, an append-only log, and a parser that degrades instead of raising add up to trustworthy visibility in about 1,200 lines with nothing installed.',
     ],
-    video: '/gallery/demo-videos/dashboard_tour.mp4',
+    video: '/gallery/demo-videos/token-tracker-demo.mp4',
+    poster: '/gallery/demo-posters/token-tracker.jpg',
+    videoLength: '15s demo',
     stack: 'Python 3.10+ · stdlib HTTP servers · OTLP/JSON · local RPC · vanilla JS · zero dependencies',
     github: 'https://github.com/boazleleina/token-tracker',
-  },
-  {
-    slug: 'gemma-rag-agent',
-    no: '✱',
-    title: 'Gemma RAG Agent',
-    tags: ['Python', 'RAG', 'Gemma', 'LLM'],
-    desc: 'A retrieval-augmented generation pipeline grounding a Gemma LLM on a custom document corpus, combining vector search with prompt construction for source-cited answers.',
-    overview: [
-      'The Gemma RAG Agent is a retrieval-augmented generation pipeline that grounds a Gemma language model on a custom document corpus rather than on its parametric memory.',
-      'Incoming questions are embedded and matched against a vector index, and the highest-scoring passages are injected into the prompt context alongside the question. The model then answers from the retrieved text, so each response can point back to the passages that produced it.',
-      'The result is answers that are accurate, current, and source-cited, over a corpus the model was never trained on.',
-    ],
-    importance: [
-      'Raw language models hallucinate, and they cannot answer questions about private or recent data that was not in their training set. Both failures look identical to a confident correct answer.',
-      'Retrieval closes that gap by supplying authoritative passages at query time, which makes the answer verifiable: a reader can check the cited source instead of trusting the model. That property is the backbone of any enterprise assistant people are expected to rely on.',
-    ],
-    stack: 'Python · Gemma · Vector Search · RAG',
-    github: 'https://github.com/boazleleina/gemma-rag-pipeline',
   },
 ];
 

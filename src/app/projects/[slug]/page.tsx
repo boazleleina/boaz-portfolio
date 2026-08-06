@@ -2,7 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Github, PlayCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import DemoVideo from '@/components/DemoVideo';
+import ArchitectureFlow from '@/components/ArchitectureFlow';
 import { PROJECTS, getProject } from '@/data/projects';
+import { NAME } from '@/data/profile';
 
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({ slug: p.slug }));
@@ -10,9 +13,16 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const project = getProject(params.slug);
+  if (!project) return { title: 'Project' };
   return {
-    title: project ? `${project.title} — Boaz Leleina` : 'Project — Boaz Leleina',
-    description: project?.desc,
+    title: project.title,
+    description: project.desc,
+    alternates: { canonical: `/projects/${project.slug}` },
+    openGraph: {
+      title: `${project.title} — ${NAME}`,
+      description: project.desc,
+      images: project.poster ? [{ url: project.poster, alt: `${project.title} demo` }] : undefined,
+    },
   };
 }
 
@@ -38,7 +48,7 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
           <span className="font-mono text-lg font-bold text-blue-400">{project.no}</span>
           <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Demo</span>
         </div>
-        <div className="flex items-start justify-between gap-4 mb-5">
+        <div className="flex items-start justify-between gap-4 mb-4">
           <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             {project.title}
           </h1>
@@ -53,6 +63,19 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
             </a>
           )}
         </div>
+
+        {/* Date, status, scope — answers "is this alive" and "did he build it" */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] font-semibold text-slate-500 mb-5">
+          <span className="font-mono">{project.date}</span>
+          <span aria-hidden className="text-slate-300">·</span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            {project.status}
+          </span>
+          <span aria-hidden className="text-slate-300">·</span>
+          <span>{project.scope}</span>
+        </div>
+
         <p className="text-base text-slate-600 leading-relaxed mb-6 max-w-2xl">
           {project.desc}
         </p>
@@ -70,24 +93,60 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
         </div>
 
         {/* ── DEMO VIDEO ─────────────────────────────────────────────────── */}
-        <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 mb-12 aspect-video">
-          {project.video ? (
-            <video
-              src={project.video}
-              controls
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-contain bg-black"
-            />
-          ) : (
+        {project.video ? (
+          <DemoVideo
+            src={project.video}
+            poster={project.poster}
+            label={`${project.title} demo`}
+            length={project.videoLength}
+            className="mb-12 aspect-video"
+          />
+        ) : (
+          <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 mb-12 aspect-video">
             <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-slate-500">
               <PlayCircle className="w-12 h-12" />
               <span className="text-xs font-bold tracking-widest uppercase">Demo video coming soon</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* ── BY THE NUMBERS ─────────────────────────────────────────────── */}
+        <section className="mb-12">
+          <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-5">By the numbers</h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-slate-200 rounded-xl overflow-hidden border border-slate-200">
+            {project.metrics.map((m) => (
+              <div key={m.label} className="bg-white px-4 py-5">
+                <dd className="text-2xl font-black tracking-tight text-slate-900">{m.value}</dd>
+                <dt className="mt-1 text-[11px] font-semibold leading-snug text-slate-500">{m.label}</dt>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {/* ── CURRENTLY BUILDING ─────────────────────────────────────────── */}
+        {project.building && (
+          <section className="mb-12">
+            <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-5">
+              Currently building
+            </h2>
+            <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-5 py-4">
+              <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-blue-700 mb-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-600" />
+                </span>
+                In progress · {project.building.since}
+              </p>
+              <p className="text-sm leading-relaxed text-slate-700">{project.building.body}</p>
+            </div>
+          </section>
+        )}
+
+        {/* ── ARCHITECTURE ───────────────────────────────────────────────── */}
+        <section className="mb-12">
+          <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-5">Architecture</h2>
+          <ArchitectureFlow architecture={project.architecture} />
+        </section>
 
         {/* ── OVERVIEW ───────────────────────────────────────────────────── */}
         <section className="mb-12">
@@ -129,12 +188,9 @@ export default function ProjectDemoPage({ params }: { params: { slug: string } }
       </main>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
-      <footer className="px-6 md:px-12 py-8 max-w-3xl mx-auto flex items-center justify-between">
+      <footer className="px-6 md:px-12 py-8 max-w-3xl mx-auto">
         <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
-          © {new Date().getFullYear()} Boaz Leleina
-        </span>
-        <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
-          Built from systems.
+          © {new Date().getFullYear()} {NAME}
         </span>
       </footer>
     </div>

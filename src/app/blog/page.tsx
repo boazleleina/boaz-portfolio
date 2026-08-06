@@ -3,8 +3,10 @@ import BlogList from '@/components/BlogList';
 import { getAllPosts } from '@/lib/blog';
 
 export const metadata = {
-  title: 'Blog — Boaz Leleina',
-  description: 'Thoughts, deep dives, and notes on systems engineering.',
+  title: 'Blog',
+  description:
+    'Deep dives on backend and platform engineering: hexagonal architecture, Alembic migrations, Slack approval workflows, resilient API ingestion, and LLM system design.',
+  alternates: { canonical: '/blog' },
 };
 
 export default function BlogPage() {
@@ -33,12 +35,9 @@ export default function BlogPage() {
       </main>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer className="px-6 md:px-12 py-8 max-w-[1400px] mx-auto flex items-center justify-between">
+      <footer className="px-6 md:px-12 py-8 max-w-[1400px] mx-auto">
         <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
           © {new Date().getFullYear()} Boaz Leleina
-        </span>
-        <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
-          Built from systems.
         </span>
       </footer>
     </div>

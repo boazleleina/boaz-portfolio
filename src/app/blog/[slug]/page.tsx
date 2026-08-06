@@ -16,9 +16,17 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const post = getPost(params.slug);
+  if (!post) return { title: 'Post' };
   return {
-    title: post ? `${post.title} — Boaz Leleina` : 'Post — Boaz Leleina',
-    description: post?.description,
+    title: post.title,
+    description: post.description,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      type: 'article',
+      title: post.title,
+      description: post.description,
+      publishedTime: post.date,
+    },
   };
 }
 
@@ -69,12 +77,9 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         </article>
       </main>
 
-      <footer className="px-6 md:px-12 py-8 max-w-3xl mx-auto flex items-center justify-between">
+      <footer className="px-6 md:px-12 py-8 max-w-3xl mx-auto">
         <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
           © {new Date().getFullYear()} Boaz Leleina
-        </span>
-        <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
-          Built from systems.
         </span>
       </footer>
     </div>

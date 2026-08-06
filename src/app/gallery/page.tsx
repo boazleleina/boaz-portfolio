@@ -15,32 +15,32 @@ interface GalleryItem {
 // TODO: customize per-image title + description as needed.
 const GALLERY_ITEMS: GalleryItem[] = [
   // ── Community — Splash Bash ──────────────────────────────────────────
-  { id: 3,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/IMG_3339.JPG', description: '' },
-  { id: 1,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/IMG_3334.JPG', description: '' },
-  { id: 4,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/IMG_3340.JPG', description: '' },
-  { id: 5,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/IMG_3341.JPG', description: '' },
-  { id: 6,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/img1.jpeg',     description: '' },
-  { id: 7,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/img10.jpeg',    description: '' },
-  { id: 8,  title: 'Splash Bash',  category: 'Community',    imageUrl: '/gallery/community/img11.jpeg',    description: '' },
+  { id: 3,  title: 'Delivering the keynote',  category: 'Community',    imageUrl: '/gallery/community/IMG_3339.JPG', description: 'Delivering the Splash Bash keynote to a donor audience in Los Angeles.' },
+  { id: 1,  title: 'Talking with donors',  category: 'Community',    imageUrl: '/gallery/community/IMG_3334.JPG', description: 'Explaining the water program to supporters before the evening program.' },
+  { id: 4,  title: 'Why clean water matters',  category: 'Community',    imageUrl: '/gallery/community/IMG_3340.JPG', description: 'Explaining what access to clean water changes day to day for women and children in my village.' },
+  { id: 5,  title: 'Education and health',  category: 'Community',    imageUrl: '/gallery/community/IMG_3341.JPG', description: 'Making the case that quality education and health outcomes rise together, and that neither moves far without the other.' },
+  { id: 6,  title: 'Before the keynote',  category: 'Community',    imageUrl: '/gallery/community/img1.jpeg',     description: 'On the Splash Bash press wall ahead of the keynote.' },
+  { id: 7,  title: 'With the director',  category: 'Community',    imageUrl: '/gallery/community/img10.jpeg',    description: 'With Linda Hopper, director of The Samburu Project.' },
+  { id: 8,  title: 'With the board chair',  category: 'Community',    imageUrl: '/gallery/community/img11.jpeg',    description: 'With the board chair of The Samburu Project at the Splash Bash press wall.' },
 
   // ── Water Access — Run for Water, Runnymede CA ───────────────────────
-  { id: 9,  title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3982.JPG', description: '' },
-  { id: 10, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3986.JPG', description: '' },
-  { id: 11, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3987.JPG', description: '' },
-  { id: 13, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3989.JPG', description: '' },
-  { id: 14, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3994.JPG', description: '' },
-  { id: 15, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img4.jpeg',     description: '' },
-  { id: 16, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img5.jpeg',     description: '' },
-  { id: 17, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img6.jpeg',     description: '' },
-  { id: 18, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img7.jpeg',     description: '' },
-  { id: 19, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img8.jpeg',     description: '' },
-  { id: 20, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img9.jpeg',     description: '' },
-  { id: 21, title: 'Run for Water', category: 'Water Access', imageUrl: '/gallery/water-access/img12.jpeg',    description: '' },
+  { id: 9,  title: 'Greeting supporters', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3982.JPG', description: 'Meeting long-time supporters at the Run for Water in Runnymede, California.' },
+  { id: 10, title: 'Networking with donors', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3986.JPG', description: 'Talking through the program with a donor over lunch at Runnymede.' },
+  { id: 11, title: 'Speaking on water access', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3987.JPG', description: 'Opening remarks at the Run for Water on why clean water access comes before almost everything else.' },
+  { id: 13, title: 'What no water costs a day', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3989.JPG', description: 'Describing what daily life looks like when the nearest clean water is hours away on foot.' },
+  { id: 14, title: 'Games with donors', category: 'Water Access', imageUrl: '/gallery/water-access/IMG_3994.JPG', description: 'Cornhole with supporters between the run and the program.' },
+  { id: 15, title: 'The Samburu Project staff', category: 'Water Access', imageUrl: '/gallery/water-access/img4.jpeg',     description: 'Group photo with the staff of The Samburu Project.' },
+  { id: 16, title: 'With Mamen Saura', category: 'Water Access', imageUrl: '/gallery/water-access/img5.jpeg',     description: 'With Mamen Saura, photographer for The Samburu Project.' },
+  { id: 17, title: 'Water comes first', category: 'Water Access', imageUrl: '/gallery/water-access/img6.jpeg',     description: 'Making the case for water access as the starting point for education and health outcomes.' },
+  { id: 18, title: 'Addressing the tables', category: 'Water Access', imageUrl: '/gallery/water-access/img7.jpeg',     description: 'Speaking to supporters seated across the lawn at Runnymede.' },
+  { id: 19, title: 'Welcoming a supporter', category: 'Water Access', imageUrl: '/gallery/water-access/img8.jpeg',     description: 'Welcoming a long-time supporter as guests arrive for the run.' },
+  { id: 20, title: 'Everyone who showed up', category: 'Water Access', imageUrl: '/gallery/water-access/img9.jpeg',     description: 'Group photo of everyone who turned out for the Run for Water.' },
+  { id: 21, title: 'Volunteers prepping', category: 'Water Access', imageUrl: '/gallery/water-access/img12.jpeg',    description: 'Volunteers setting up before the gates open.' },
 
   // ── Education ────────────────────────────────────────────────────────
-  { id: 22, title: 'Education for All', category: 'Education', imageUrl: '/gallery/education/edu-1000044320.jpg',  description: '' },
-  { id: 23, title: 'Education for All', category: 'Education', imageUrl: '/gallery/education/edu-pxl-20260421.jpg', description: '' },
-  { id: 24, title: 'Education for All', category: 'Education', imageUrl: '/gallery/education/edu-screenshot.png',   description: '' },
+  { id: 22, title: 'Elementary school visit', category: 'Education', imageUrl: '/gallery/education/edu-1000044320.jpg',  description: 'Talking with students at an elementary school in Washington about how life-changing education is, and what the road from a village in Samburu to the US actually looked like.' },
+  { id: 23, title: 'Questions from the class', category: 'Education', imageUrl: '/gallery/education/edu-pxl-20260421.jpg', description: 'Hands up across the room during questions, same visit.' },
+  { id: 24, title: 'Back at my high school', category: 'Education', imageUrl: '/gallery/education/edu-screenshot.png',   description: 'Back at my old high school in Kenya, talking to students about hard work and persistence.' },
 ];
 
 const CATEGORIES = ['All', 'Community', 'Water Access', 'Education'];
@@ -155,7 +155,7 @@ export default function GalleryPage() {
               >
                 <img
                   src={item.imageUrl}
-                  alt={item.title}
+                  alt={item.description || `${item.title} — ${item.category} work with The Samburu Project`}
                   className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
                 
@@ -164,8 +164,14 @@ export default function GalleryPage() {
                   <span className="flex items-center gap-1.5 text-[9px] font-bold tracking-widest uppercase text-blue-400 mb-1.5">
                     <ZoomIn className="w-3.5 h-3.5" /> View Photo
                   </span>
-                  <h3 className="text-white text-base font-bold leading-tight">{item.title}</h3>
-                  <p className="text-white/80 text-[11px] font-mono mt-1.5 uppercase tracking-wider">{item.category}</p>
+                  {item.description ? (
+                    <>
+                      <h3 className="text-white text-base font-bold leading-tight">{item.title}</h3>
+                      <p className="text-white/80 text-xs leading-snug mt-1.5">{item.description}</p>
+                    </>
+                  ) : (
+                    <p className="text-white/80 text-[11px] font-mono uppercase tracking-wider">{item.category}</p>
+                  )}
                 </div>
               </div>
             ))}
@@ -228,7 +234,7 @@ export default function GalleryPage() {
             <div className="relative max-h-[70vh] w-full flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl bg-slate-50">
               <img
                 src={filteredItems[activeIdx].imageUrl}
-                alt={filteredItems[activeIdx].title}
+                alt={filteredItems[activeIdx].description || `${filteredItems[activeIdx].title} — ${filteredItems[activeIdx].category} work with The Samburu Project`}
                 className="max-h-[70vh] max-w-full object-contain"
               />
             </div>

@@ -3,8 +3,50 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X, Menu } from 'lucide-react';
+import { X, Menu, Github, Linkedin, Instagram, Twitter, Mail } from 'lucide-react';
 import Logo from './Logo';
+import { AVAILABILITY, EMAIL, SOCIALS } from '@/data/profile';
+
+const MAILTO = `mailto:${EMAIL}?subject=${encodeURIComponent('Role opportunity')}`;
+
+/**
+ * Socials shown in the nav. X and Instagram are deliberately excluded: next to
+ * GitHub and LinkedIn they read as noise to a recruiter and spend a click that
+ * helps less. They remain in SOCIALS for JSON-LD `sameAs`.
+ */
+const NAV_SOCIALS = ['GitHub', 'LinkedIn'];
+
+// Icon per social name. Keeps the navbar to glyphs so it never crowds the links.
+const SOCIAL_ICONS: Record<string, typeof Github> = {
+  GitHub: Github,
+  LinkedIn: Linkedin,
+  X: Twitter,
+  Instagram: Instagram,
+};
+
+function SocialLinks({ onNavigate, className = '' }: { onNavigate?: () => void; className?: string }) {
+  return (
+    <div className={`flex items-center gap-1 ${className}`}>
+      {SOCIALS.filter((s) => s.url && NAV_SOCIALS.includes(s.name)).map(({ name, url, label }) => {
+        const Icon = SOCIAL_ICONS[name];
+        return (
+          <a
+            key={name}
+            href={url as string}
+            target="_blank"
+            rel="noreferrer me"
+            aria-label={label}
+            title={label}
+            onClick={onNavigate}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-900"
+          >
+            <Icon className="h-[15px] w-[15px]" />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
 
 // Single source of truth for nav links — used by desktop + mobile menus everywhere.
 export const NAV_LINKS = [
@@ -14,6 +56,7 @@ export const NAV_LINKS = [
   { href: '/#work', label: 'Projects' },
   { href: '/#impact', label: 'Impact' },
   { href: '/blog', label: 'Blog' },
+  { href: '/resume', label: 'Resume' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/#contact', label: 'Contact' },
 ];
@@ -44,7 +87,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav — only visible at lg (1024px+) */}
-        <nav className="hidden lg:flex items-center gap-8 xl:gap-10 text-[11px] font-bold tracking-[0.18em] uppercase text-slate-500">
+        <nav className="hidden xl:flex items-center gap-6 2xl:gap-8 text-[11px] font-bold tracking-[0.18em] uppercase text-slate-500">
           {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={label}
@@ -56,19 +99,24 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 lg:gap-3">
+        <div className="flex items-center gap-2 xl:gap-3">
+          <SocialLinks className="hidden xl:flex" />
+
           {/* Hire me — desktop only */}
-          <a href="mailto:boazleleina3@gmail.com"
-            className="hidden lg:inline-flex text-[11px] font-bold tracking-wider uppercase px-4 py-2 rounded-full
-              bg-slate-100 hover:bg-black hover:text-white transition-all duration-200">
-            Hire me
+          <a
+            href={MAILTO}
+            aria-label={`Email ${EMAIL}`}
+            title={`Email ${EMAIL}`}
+            className="hidden xl:flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-900"
+          >
+            <Mail className="h-[15px] w-[15px]" />
           </a>
 
           {/* Hamburger — mobile & tablet (< lg) */}
           <button
             onClick={() => setMobileMenuOpen(prev => !prev)}
             aria-label="Toggle menu"
-            className="lg:hidden relative z-50 flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all duration-200"
+            className="xl:hidden relative z-50 flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all duration-200"
           >
             {mobileMenuOpen
               ? <X className="w-4 h-4 text-slate-700" />
@@ -79,7 +127,7 @@ export default function Navbar() {
 
       {/* ── Slide-down menu — mobile & tablet (< lg) ──────────────────────── */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'
+        className={`xl:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'
           }`}
       >
         <div className="mx-4 mb-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
@@ -97,15 +145,18 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          {/* Hire me CTA */}
-          <div className="px-4 py-3 flex items-center justify-between">
-            <span className="text-[9px] font-bold tracking-widest uppercase text-slate-400">Available for work</span>
+          {/* Availability + socials + CTA */}
+          <div className="px-4 pt-3 text-[9px] font-bold tracking-widest uppercase text-emerald-600">
+            {AVAILABILITY.short} · MS CS, {AVAILABILITY.graduation}
+          </div>
+          <div className="px-4 py-3 flex items-center justify-between gap-3">
+            <SocialLinks onNavigate={closeMobileMenu} />
             <a
-              href="mailto:boazleleina3@gmail.com"
+              href={MAILTO}
               onClick={closeMobileMenu}
-              className="text-[10px] font-bold tracking-wider uppercase px-5 py-2 rounded-full bg-black text-white hover:bg-slate-800 transition-all duration-200"
+              className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase px-5 py-2 rounded-full bg-black text-white hover:bg-slate-800 transition-all duration-200"
             >
-              Hire me
+              <Mail className="h-3.5 w-3.5" /> Email me
             </a>
           </div>
         </div>
